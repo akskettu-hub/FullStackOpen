@@ -1,6 +1,6 @@
 Exercise 0.5
 
-Loading the SPA of the website does not look in any way different from the other version. The JavaScript file returned from the server is different.
+Loading the SPA version of the website does not look in any way different from the other version. Only the JavaScript file returned from the server is different.
 
 ```mermaid
 sequenceDiagram
