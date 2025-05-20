@@ -5,6 +5,8 @@ sequenceDiagram
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
     activate server
+    Note right of browser: When the 'save' button is pressed, the browser sends a HTTP POST request to the server, and the string entered into the form field is added stored on the server, but not added the database.
+
     server-->>browser: HTML document
     deactivate server
 
