@@ -1,3 +1,7 @@
+Exercise 0.4
+
+A diagram depicting what happens when form data is sent to server.
+
 ```mermaid
 sequenceDiagram
     participant browser
@@ -5,11 +9,11 @@ sequenceDiagram
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
     activate server
-    Note right of browser: When the 'save' button is pressed, the browser sends a HTTP POST request to the server, and the string entered into the form field is added stored on the server, but not added the database.
+    Note right of browser: When the 'save' button is pressed, the browser sends a HTTP POST request to the server, with the form data
 
     server-->>browser: HTML document
     deactivate server
-
+    Note left of server: Form data is stored on server but not added to database. 
     Note right of browser: The server responds with a url redirect (status code 302), causing the website to reload. 
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
