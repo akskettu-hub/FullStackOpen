@@ -28,6 +28,12 @@ const calculatePositives = (entries) => {
     return (posCount / entries.length) * 100
   }
 
+const StatisticLine = ({text, value}) => {
+  return (
+    <div> {text} {value} </div>
+  )
+}
+
 const Statistics = ({ entries, good, neutral, bad }) => {
   if (entries.length === 0) {
     return (
@@ -41,13 +47,13 @@ const Statistics = ({ entries, good, neutral, bad }) => {
     <div>
       <Header text="statistics"/>
 
-      <div> good {good}</div>
-      <div> neutral {neutral}</div>
-      <div> bad {bad}</div>
+      <StatisticLine text="good" value ={good} />
+      <StatisticLine text="neutral" value ={neutral} />
+      <StatisticLine text="bad" value ={bad} />
 
-      <div> all {entries.length}</div>
-      <div> average {calculateAverage(entries)}</div>
-      <div> positive {calculatePositives(entries)} % </div>
+      <StatisticLine text="all" value ={entries.length} />
+      <StatisticLine text="average" value ={calculateAverage(entries)} />
+      <StatisticLine text="positive" value ={calculatePositives(entries)} />
     </div>
   )
 }
@@ -105,5 +111,4 @@ const App = () => {
   )
 }
 
-//<Button onClick={handleReset} text='Reset'/>
 export default App
