@@ -25,12 +25,15 @@ const calculatePositives = (entries) => {
     }
 
     const posCount= entries.filter(num => num > 0).length;
-    return (posCount / entries.length) * 100
+    return `${(posCount / entries.length) * 100} %`
   }
 
 const StatisticLine = ({text, value}) => {
   return (
-    <div> {text} {value} </div>
+    <tr>
+      <td> {text} </td>
+      <td> {value} </td>
+    </tr>
   )
 }
 
@@ -47,13 +50,19 @@ const Statistics = ({ entries, good, neutral, bad }) => {
     <div>
       <Header text="statistics"/>
 
-      <StatisticLine text="good" value ={good} />
-      <StatisticLine text="neutral" value ={neutral} />
-      <StatisticLine text="bad" value ={bad} />
+      <table>
+        <tbody>
+          <StatisticLine text="good" value ={good} />
+          <StatisticLine text="neutral" value ={neutral} />
+          <StatisticLine text="bad" value ={bad} />
 
-      <StatisticLine text="all" value ={entries.length} />
-      <StatisticLine text="average" value ={calculateAverage(entries)} />
-      <StatisticLine text="positive" value ={calculatePositives(entries)} />
+          <StatisticLine text="all" value ={entries.length} />
+          <StatisticLine text="average" value ={calculateAverage(entries)} />
+          <StatisticLine text="positive" value ={calculatePositives(entries)} />
+        </tbody>
+      </table>
+
+      
     </div>
   )
 }
