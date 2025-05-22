@@ -10,6 +10,40 @@ const Header = ({ text }) => {
 
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
+const calculateAverage = (entries) => {
+    if (entries.length === 0) {
+      return 0;
+    }
+
+    const sum = entries.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    return sum / entries.length
+  }
+
+const calculatePositives = (entries) => {
+    if (entries.length === 0) {
+      return 0;
+    }
+
+    const posCount= entries.filter(num => num > 0).length;
+    return (posCount / entries.length) * 100
+  }
+
+const Statistics = ({ props, good, neutral, bad }) => {
+  return (
+    <div>
+      <h1>{"statistics"}</h1>
+
+      <div> good {good}</div>
+      <div> neutral {neutral}</div>
+      <div> bad {bad}</div>
+
+      <div> all {props.length}</div>
+      <div> average {calculateAverage(props)}</div>
+      <div> positive {calculatePositives(props)} % </div>
+    </div>
+  )
+}
+
 const App = () => {
   // save clicks of each button to its own state
   const [good, setGood] = useState(0)
@@ -49,42 +83,14 @@ const App = () => {
     setEntries(entries.concat(-1))
   }
 
-  const calculateAverage = () => {
-    if (entries.length === 0) {
-      return 0;
-    }
-
-    const sum = entries.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    return sum / entries.length
-  }
-
-  const calculatePositives = () => {
-    if (entries.length === 0) {
-      return 0;
-    }
-
-    const posCount= entries.filter(num => num > 0).length;
-    return (posCount / entries.length) * 100
-  }
-
-  //console.log(calculateAverage())
-  //console.log(calculatePositives())
-
   return (
     <div>
       <Header text="give feeback"/>
       <Button onClick={handleGoodClick} text='good'/>
       <Button onClick={handleNeutralClick} text='neutral'/>
       <Button onClick={handleBadClick} text='bad'/>
-            
-      <Header text="statistics"/>
-      <div> good {good}</div>
-      <div> neutral {neutral}</div>
-      <div> bad {bad}</div>
 
-      <div> all {entries.length}</div>
-      <div> average {calculateAverage()}</div>
-      <div> positive {calculatePositives()} % </div>
+      <Statistics props={entries} good={good} neutral={neutral} bad={bad}/>
       
       <Button onClick={handleReset} text='Reset'/>     
     </div>
