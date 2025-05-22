@@ -61,8 +61,6 @@ const Statistics = ({ entries, good, neutral, bad }) => {
           <StatisticLine text="positive" value ={calculatePositives(entries)} />
         </tbody>
       </table>
-
-      
     </div>
   )
 }
@@ -73,36 +71,20 @@ const App = () => {
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
 
-  const [all, setAll] = useState([0])
   const [entries, setEntries] = useState([])
-
-  const handleReset = () => {
-  setGood(0)
-  setNeutral(0)
-  setBad(0)
-
-  setAll(0)
-  setEntries([])
-  }
 
   const handleGoodClick = () => {
     setGood(good + 1)
-    setAll(all + 1)
-
-    setEntries(entries.concat(1))
+        setEntries(entries.concat(1))
   }
 
   const handleNeutralClick = () => {
     setNeutral(neutral + 1)
-    setAll(all + 1)
-    
     setEntries(entries.concat(0))
   }
 
   const handleBadClick = () => {
     setBad(bad + 1)
-    setAll(all + 1)
-    
     setEntries(entries.concat(-1))
   }
 
@@ -113,9 +95,7 @@ const App = () => {
       <Button onClick={handleNeutralClick} text='neutral'/>
       <Button onClick={handleBadClick} text='bad'/>
 
-      <Statistics entries={entries} good={good} neutral={neutral} bad={bad}/>
-      
-      <Button onClick={handleReset} text='Reset'/>     
+      <Statistics entries={entries} good={good} neutral={neutral} bad={bad}/>    
     </div>
   )
 }
