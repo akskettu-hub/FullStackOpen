@@ -28,18 +28,26 @@ const calculatePositives = (entries) => {
     return (posCount / entries.length) * 100
   }
 
-const Statistics = ({ props, good, neutral, bad }) => {
+const Statistics = ({ entries, good, neutral, bad }) => {
+  if (entries.length === 0) {
+    return (
+      <div>
+      <Header text="statistics"/>
+      <div> No feedback given </div>
+    </div>
+    )
+  }
   return (
     <div>
-      <h1>{"statistics"}</h1>
+      <Header text="statistics"/>
 
       <div> good {good}</div>
       <div> neutral {neutral}</div>
       <div> bad {bad}</div>
 
-      <div> all {props.length}</div>
-      <div> average {calculateAverage(props)}</div>
-      <div> positive {calculatePositives(props)} % </div>
+      <div> all {entries.length}</div>
+      <div> average {calculateAverage(entries)}</div>
+      <div> positive {calculatePositives(entries)} % </div>
     </div>
   )
 }
@@ -90,7 +98,7 @@ const App = () => {
       <Button onClick={handleNeutralClick} text='neutral'/>
       <Button onClick={handleBadClick} text='bad'/>
 
-      <Statistics props={entries} good={good} neutral={neutral} bad={bad}/>
+      <Statistics entries={entries} good={good} neutral={neutral} bad={bad}/>
       
       <Button onClick={handleReset} text='Reset'/>     
     </div>
