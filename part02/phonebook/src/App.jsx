@@ -29,7 +29,7 @@ const App = () => {
     setNewName('')
   }
 
-  const handleNoteChange = (event) => {
+  const handleNameChange = (event) => {
     console.log(event.target.value)
     setNewName(event.target.value)
   }
@@ -39,7 +39,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={addNewName}>
         <div>
-          name: <input value={newName} onChange={handleNoteChange}/>
+          name: <input value={newName} onChange={handleNameChange}/>
         </div>
         <div>
           <button type="submit">add</button>
