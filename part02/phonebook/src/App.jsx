@@ -1,5 +1,22 @@
 import { useState } from 'react'
 
+const Filter = ({ value, onChange }) => <div>filter shown with: <input value={value} onChange={onChange}/></div>
+
+
+
+const PersonForm = ({ onSubmit, nameProps, numberProps }) => {
+  return (
+    <form onSubmit={onSubmit}>
+        <div>name: <input {...nameProps}/></div>
+        <div>number: <input {...numberProps}/></div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+
+  )
+}
+
 const Entry = ({person}) => <p>{person.name} {person.number}</p>
 
 // Returns all entries that pass the filter. If filter is an empty string, all entries are returned. 
@@ -65,16 +82,26 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>filter shown with: <input value={newFilter} onChange={handleFilterChange}/></div>
-      <h2>Add a new number</h2>
-      <form onSubmit={addNewName}>
-        <div>name: <input value={newName} onChange={handleNameChange}/></div>
-        <div>number: <input value={newNumber} onChange={handleNumberChange}/></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
+      <Filter value={newFilter} onChange={handleFilterChange}/>
+
+      <h3>Add a new number</h3>
+      <PersonForm 
+        onSubmit={addNewName}
+        nameProps={{
+          value: newName,
+          onChange: handleNameChange
+        }}
+        numberProps={{
+          value: newNumber,
+          onChange: handleNumberChange
+        }}
+        valueName={newName} 
+        onChangeName={handleNameChange} 
+        valueNumber={newNumber} 
+        onChangeNumber={handleNumberChange}
+      />
+      
+      <h3>Numbers</h3>
       <Entries persons={persons} filter={newFilter}/>
     </div>
   )
