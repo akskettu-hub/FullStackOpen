@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
-const Entry = ({person}) => <p key={person.name}>{person.name} </p>
+const Entry = ({person}) => <p>{person.name} </p>
 
 const Entries = ({persons}) => {
   return (
     <div>
-      {persons.map(person => (<Entry person={person}/>))}
+      {persons.map(person => (<Entry key={person.name} person={person}/>))}
     </div>
   )
 }
@@ -21,12 +21,16 @@ const App = () => {
     console.log('button clicked', event.target)
     const nameObject = {
       name: newName
-      
-      
     }
 
-    setPersons(persons.concat(nameObject))
-    setNewName('')
+    if (persons.some(person => person.name === nameObject.name)) {
+      console.log(`${nameObject.name} already in phonebook`);
+      alert(`${nameObject.name} is already added to phonebook.`)
+    } else {
+      console.log(`${nameObject.name} not in phonebook`);
+      setPersons(persons.concat(nameObject));
+      setNewName('');
+    }
   }
 
   const handleNameChange = (event) => {
