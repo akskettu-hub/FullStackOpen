@@ -15,10 +15,16 @@ const PersonForm = ({ onSubmit, nameProps, numberProps }) => {
   )
 }
 
-const Entry = ({person}) => <p>{person.name} {person.number}</p>
+const Entry = ({ person, onClick }) => {
+  const handleDelete = () => onClick(person) 
+  
+  return (
+    <p>{person.name} {person.number} <button onClick={handleDelete}>delete</button> </p>
+  ) 
+}
 
 // Returns all entries that pass the filter. If filter is an empty string, all entries are returned. 
-const Entries = ({ persons, filter }) => {
+const Entries = ({ persons, filter, onClick }) => {
   return (
     <div>
       {persons
@@ -26,7 +32,7 @@ const Entries = ({ persons, filter }) => {
           !filter || person.name.toLowerCase().includes(filter.toLowerCase()) 
         )
         .map(person => (
-          <Entry key={person.name} person={person}/>
+          <Entry key={person.name} person={person} onClick={onClick}/>
         ))
       }
     </div>
@@ -62,12 +68,14 @@ const App = () => {
       console.log(`${nameObject.name} already in phonebook`)
       alert(`${nameObject.name} is already added to phonebook.`)
     } else {
-      setPersons(persons.concat(nameObject))
       numberService
         .create(nameObject)
         .then(response => {
-        console.log(response)
+        setPersons(persons.concat(response.data))
+        console.log(`Entry for ${nameObject.name} added to server.`);        
       })
+      setNewName('')
+      setnewNumber('')
     }
   }
 
@@ -84,6 +92,19 @@ const App = () => {
   const handleFilterChange = (event) => {
     console.log(event.target.value)
     setnewFilter(event.target.value)
+  }
+
+  const handleDeleteClick = (person) => {
+    console.log(`delete clicked for ${person.id}`);
+
+    if (confirm(`Delete ${person.name}?`)) {
+      numberService
+        .deleteEntry(person.id)
+        .then(response => {
+          setPersons(persons.filter((person) => person.id !== response.data.id))
+          console.log(`Entry for ${person.name} (id:${person.id}) deleted from server`);
+        })
+    }
   }
 
   return (
@@ -105,7 +126,7 @@ const App = () => {
       />
       
       <h3>Numbers</h3>
-      <Entries persons={persons} filter={newFilter}/>
+      <Entries persons={persons} filter={newFilter} onClick={handleDeleteClick}/>
     </div>
   )
 }
