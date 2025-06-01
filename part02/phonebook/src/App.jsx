@@ -39,11 +39,35 @@ const Entries = ({ persons, filter, onClick }) => {
   )
 }
 
+const Notification = ({ message, className }) => {
+  if (message === null) {
+    return null
+  }
+  console.log(className);
+  
+  return (
+    <div className={className}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setnewNumber] = useState('')
   const [newFilter, setnewFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState(null)
+
+  const handleNotification = (message, type) => {
+
+    console.log(type);
+    
+    setNotificationType(type)
+    setErrorMessage(message)
+    setTimeout(() => {setErrorMessage(null)}, 5000)
+  }
 
   useEffect(() => {
     console.log("effect")
@@ -73,14 +97,24 @@ const App = () => {
           .then(response => {
             setPersons(persons.map(person => person.id === id ? response.data : person))
             console.log(`Number for ${nameObject.name} (id:${id}) changed.`);
+
+            handleNotification(`Number for ${nameObject.name} changed.`, 'notification')
+             
           })
+            .catch(error => {
+              setPersons(persons.filter(person => person.id !== id))
+              handleNotification(`Information for ${nameObject.name} has already been removed from server.`, 'error')
+              console.log('chaught error')
+          })
+          
       }
     } else {
       numberService
         .create(nameObject)
         .then(response => {
         setPersons(persons.concat(response.data))
-        console.log(`Entry for ${nameObject.name} added to server.`);        
+        console.log(`Entry for ${nameObject.name} added to server.`);
+        handleNotification(`Added ${nameObject.name}`, 'notification')   
       })
     }
     setNewName('')
@@ -118,6 +152,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} className={notificationType} />
       <Filter value={newFilter} onChange={handleFilterChange}/>
 
       <h3>Add a new number</h3>
