@@ -66,7 +66,15 @@ const App = () => {
 
     if (persons.some(person => person.name === nameObject.name)) {
       console.log(`${nameObject.name} already in phonebook`)
-      alert(`${nameObject.name} is already added to phonebook.`)
+      if (confirm(`${nameObject.name} is already added to phonebook. Replace old number with a new one?`)) {
+        const id = persons.find(person => person.name === nameObject.name).id        
+        numberService
+          .update(id, nameObject)
+          .then(response => {
+            setPersons(persons.map(person => person.id === id ? response.data : person))
+            console.log(`Number for ${nameObject.name} (id:${id}) changed.`);
+          })
+      }
     } else {
       numberService
         .create(nameObject)
@@ -74,9 +82,9 @@ const App = () => {
         setPersons(persons.concat(response.data))
         console.log(`Entry for ${nameObject.name} added to server.`);        
       })
-      setNewName('')
-      setnewNumber('')
     }
+    setNewName('')
+    setnewNumber('')
   }
 
   const handleNameChange = (event) => {
