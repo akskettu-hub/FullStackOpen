@@ -60,15 +60,6 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [notificationType, setNotificationType] = useState(null)
 
-  const handleNotification = (message, type) => {
-
-    console.log(type);
-    
-    setNotificationType(type)
-    setErrorMessage(message)
-    setTimeout(() => {setErrorMessage(null)}, 5000)
-  }
-
   useEffect(() => {
     console.log("effect")
     numberService
@@ -80,6 +71,12 @@ const App = () => {
     console.log('render', persons.length, 'notes')
   }, [])
   
+  const handleNotification = (message, type) => {
+      setNotificationType(type)
+      setErrorMessage(message)
+      setTimeout(() => {setErrorMessage(null)}, 5000)
+    }
+
   const addNewName = (event) => {
     event.preventDefault()
     console.log('button clicked', event.target)
@@ -97,25 +94,22 @@ const App = () => {
           .then(response => {
             setPersons(persons.map(person => person.id === id ? response.data : person))
             console.log(`Number for ${nameObject.name} (id:${id}) changed.`);
-
             handleNotification(`Number for ${nameObject.name} changed.`, 'notification')
-             
           })
-            .catch(error => {
-              setPersons(persons.filter(person => person.id !== id))
-              handleNotification(`Information for ${nameObject.name} has already been removed from server.`, 'error')
-              console.log('chaught error')
+          .catch(error => {
+            setPersons(persons.filter(person => person.id !== id))
+            handleNotification(`Information for ${nameObject.name} has already been removed from server.`, 'error')
+            console.log('chaught error')
           })
-          
       }
     } else {
       numberService
         .create(nameObject)
         .then(response => {
-        setPersons(persons.concat(response.data))
-        console.log(`Entry for ${nameObject.name} added to server.`);
-        handleNotification(`Added ${nameObject.name}`, 'notification')   
-      })
+          setPersons(persons.concat(response.data))
+          console.log(`Entry for ${nameObject.name} added to server.`);
+          handleNotification(`Added ${nameObject.name}`, 'notification')   
+        })
     }
     setNewName('')
     setnewNumber('')
