@@ -32,8 +32,6 @@ const Countries = ({ countries , handleClick}) => {
 
 const CountryCardFlag = ({ flagUrl }) => {
   console.log(flagUrl)
-  //fetch picture
-  //return renderable image
   return <img src={flagUrl} alt="Country flag not found" />
 }
 
@@ -75,12 +73,43 @@ const CountryCard = ({ countryData }) => {
   )
 }
 
+const WeatherCardIcon = ({iconId}) => {
+  console.log('weather icon data:', iconId);
+  
+  return (
+    <img src={`https://openweathermap.org/img/wn/${iconId}@2x.png`} alt="Weather icon not found :(" />
+  )
+}
+
+const WeatherCard = ({weatherData, countryData}) => {
+  // Country data is need here because the weather API returns the name of a part of the capital
+  // I presume this is the location of the nearest weather station, and therefore not ideal.
+  // the name of the station can be accessed through {countryData.name}
+  // An additional complication is that countryData can also be null, if no specific country is selected
+  // For this reason both props need to be checked for null.
+  
+  if (!weatherData || !countryData) {
+    return null
+  }
+  console.log('capital for weather:', countryData.capital[0])
+  
+  return (
+    <div>
+      <h2>Weather in {countryData.capital[0]}</h2>
+      <div>Temperature {weatherData.main.temp} Celsius</div>
+      <WeatherCardIcon iconId={weatherData.weather[0].icon}/>
+      <div>Wind {weatherData.wind.speed} m/s</div>
+    </div>
+  )
+}
+
 const App = () => {
   const [newQuery, setNewQuery] = useState('')
   const [countries, setCountries]= useState([])
   const [filteredCountries, setFilteredCountries]= useState([])
   const [matchingCountry, setMatchingCountry]= useState(null)
   const [matchingCountryData, setMatchingCountryData]= useState(null)
+  const [capitalWeatherData, setCapitalWeatherData]= useState(null)
 
   useEffect(() => {
     console.log("effect")
@@ -127,6 +156,26 @@ const App = () => {
     }
   }, [matchingCountry])
 
+  useEffect(() =>{
+    if (matchingCountryData) {
+      // fetch country data
+      // set country data
+      const cords = matchingCountryData.capitalInfo.latlng
+      console.log('capital cordinates:', cords)
+
+      countriesService
+        .getWeather(cords)
+        .then(response => {
+          console.log('promise fulfilled: weather data');
+          console.log(response.data)
+          setCapitalWeatherData(response.data)
+        })
+    } else {
+      console.log('setting weather data to null: no matching country')
+      setCapitalWeatherData(null)
+    }
+  }, [matchingCountryData])
+
   const handleQueryChange = (event) => {
     console.log(event.target.value)
     setNewQuery(event.target.value)
@@ -142,6 +191,7 @@ const App = () => {
       <SearchField value={newQuery} onChange={handleQueryChange}/>
       <Countries countries={filteredCountries} handleClick={handleClick}/>
       <CountryCard countryData={matchingCountryData}/>
+      <WeatherCard weatherData={capitalWeatherData} countryData={matchingCountryData}/>
     </div>
   )
 }
