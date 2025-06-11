@@ -3,18 +3,25 @@ import countriesService from './services/countries'
 
 const SearchField = ({ value, onChange }) => <div>Find countries: <input value={value} onChange={onChange}/></div>
 
-const Country = ({ country }) => <div> {country} </div>
+const Country = ({ country , handleClick}) => {
+  return (
+    <div> 
+      {country} 
+      <button type='button' onClick={() => handleClick(country)}>Show</button>
+    </div>
+  )
+}
 
-const Countries = ({ countries }) => {
+const Countries = ({ countries , handleClick}) => {
   console.log(countries)
   if (countries.length > 1 && countries.length < 11) {
-    console.log('matching 1-10');
+    console.log('matching 2-10');
     
     return (
       <div>
         {
           countries.map(country => (
-          <Country key={country} country={country} />
+          <Country key={country} country={country} handleClick={handleClick} />
           ))
         }
       </div>
@@ -85,13 +92,9 @@ const App = () => {
         console.log("Found", countries.length, "countries")
       })
   }, [])
-  
-  const handleQueryChange = (event) => {
-    console.log(event.target.value)
-    setNewQuery(event.target.value)
-  }
 
   useEffect(() => {
+    // Filters countries by query in lower case. If query is empty, all pass filter.
     const matching = countries.filter(country => !newQuery || country.toLowerCase().includes(newQuery.toLowerCase()))
 
     setFilteredCountries(matching)
@@ -107,7 +110,6 @@ const App = () => {
   }, [newQuery])
 
   useEffect(() =>{
-
     if (matchingCountry) {
       // fetch country data
       // set country data
@@ -125,11 +127,20 @@ const App = () => {
     }
   }, [matchingCountry])
 
+  const handleQueryChange = (event) => {
+    console.log(event.target.value)
+    setNewQuery(event.target.value)
+  }
+
+  const handleClick = (country) => {
+    console.log('clicked', country)    
+    setMatchingCountry(country)
+  }
+
   return (
     <div>
       <SearchField value={newQuery} onChange={handleQueryChange}/>
-      <div>{newQuery}</div>
-      <Countries countries={filteredCountries} />
+      <Countries countries={filteredCountries} handleClick={handleClick}/>
       <CountryCard countryData={matchingCountryData}/>
     </div>
   )
