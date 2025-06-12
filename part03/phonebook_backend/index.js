@@ -66,16 +66,22 @@ const generateId = () => {
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
+  
+  if (persons.some(person => person.name === body.name)) {
+    return response.status(400).json({
+        error: 'name already in phonebook'
+    })
+  }
 
-  if (!body.name) {
+  if (!body.name || !body.number) {
     return response.status(400).json({ 
-      error: 'name missing' 
+      error: 'name and/or number missing' 
     })
   }
 
   const person = {
     name: body.name,
-    number: body.number || null,
+    number: body.number,
     id: generateId(),
   }
 
