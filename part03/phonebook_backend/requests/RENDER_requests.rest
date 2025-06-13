@@ -1,0 +1,11 @@
+GET https://fullstackopen-phonebook-backend-su3b.onrender.com/api/persons
+###
+POST https://fullstackopen-phonebook-backend-su3b.onrender.com/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Jim Namerson",
+    "number": "987987987987"
+}
+###
+DELETE https://fullstackopen-phonebook-backend-su3b.onrender.com/api/persons/65
