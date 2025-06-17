@@ -1,3 +1,11 @@
 GET http://localhost:3001/api/persons
 ###
-GET http://localhost:3001/api/persons/68515fe59c243f1e67d285c7
+GET http://localhost:3001/api/persons/68516202250d5459a12b5f5a
+###
+PUT http://localhost:3001/api/persons/68516202250d5459a12b5f5a
+Content-Type: application/json
+
+{
+    "name": "Toby Deleted",
+    "number": "098045656"
+}
