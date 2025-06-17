@@ -8,4 +8,6 @@ Content-Type: application/json
     "number": "02934820394"
 }
 ###
-DELETE https://fullstackopen-phonebook-backend-su3b.onrender.com/api/persons/65
+DELETE https://fullstackopen-phonebook-backend-su3b.onrender.com/api/persons/68514215c2c35873aea75e81
+###
+GET https://fullstackopen-phonebook-backend-su3b.onrender.com/api/persons/68514215c2c35873aea75e81
