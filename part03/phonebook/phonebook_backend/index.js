@@ -101,15 +101,14 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const person = {
-    name: body.name,
-    number: body.number,
-    id: generateId(),
-  }
-
-  persons = persons.concat(person)
-
-  response.json(person)
+  const person = new Person({
+        name: body.name,
+        number: body.number,
+  })
+  
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {

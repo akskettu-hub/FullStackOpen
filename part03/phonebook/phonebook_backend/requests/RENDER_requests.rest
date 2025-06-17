@@ -4,8 +4,8 @@ POST https://fullstackopen-phonebook-backend-su3b.onrender.com/api/persons/
 Content-Type: application/json
 
 {
-    "name": "Jim Namerson",
-    "number": "987987987987"
+    "name": "Testis Testerson",
+    "number": "02934820394"
 }
 ###
 DELETE https://fullstackopen-phonebook-backend-su3b.onrender.com/api/persons/65
