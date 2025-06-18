@@ -97,11 +97,20 @@ const App = () => {
             handleNotification(`Number for ${nameObject.name} changed.`, 'notification')
           })
           .catch(error => {
-            setPersons(persons.filter(person => person.id !== id))
-            handleNotification(`Information for ${nameObject.name} has already been removed from server.`, 'error')
-            console.log('chaught error')
+            console.log(error.response.status);
+            if (error.response.status === 400) {
+              console.log(error.response.data.error)
+              handleNotification(error.response.data.error, 'error')
+            } else {
+              setPersons(persons.filter(person => person.id !== id))
+              handleNotification(`Information for ${nameObject.name} has already been removed from server.`, 'error')
+              console.log('chaught error')
+            }
           })
-      }
+              
+    }
+            
+            
     } else {
       numberService
         .create(nameObject)
@@ -109,6 +118,10 @@ const App = () => {
           setPersons(persons.concat(response.data))
           console.log(`Entry for ${nameObject.name} added to server.`);
           handleNotification(`Added ${nameObject.name}`, 'notification')   
+        })
+        .catch(error => {
+          console.log(error.response.data.error)
+          handleNotification(error.response.data.error, 'error')
         })
     }
     setNewName('')
