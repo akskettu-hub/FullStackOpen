@@ -1,0 +1,23 @@
+GET http://localhost:3001/api/persons
+###
+GET http://localhost:3001/api/persons/68514215c2c35873aea75e81
+###
+POST http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Toby Deleted",
+    "number": "0980980986"
+}
+###
+PUT http://localhost:3001/api/persons/6852992bca659e114aeb8723
+Content-Type: application/json
+
+{
+    "name": "Toby Deleted",
+    "number": "098045656"
+}
+###
+DELETE http://localhost:3001/api/persons/6852992bca659e114aeb8723
+###
+GET http://localhost:3001/api/persimons/
