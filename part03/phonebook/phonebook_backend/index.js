@@ -31,14 +31,14 @@ const morgan = require('morgan')
 
 morgan.token('body', (req) => {
   return JSON.stringify(req.body)
-});
+})
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body', {
-    skip: req => req.method !== 'POST'
+  skip: req => req.method !== 'POST'
 }))
 
 app.use(morgan('tiny', {
-    skip: req => req.method === 'POST'
+  skip: req => req.method === 'POST'
 }))
 
 app.get('/', (request, response) => {
@@ -54,8 +54,8 @@ app.get('/api/persons', (request, response) => {
 app.get('/info', (request, response, next) => {
   Person.find({})
     .then(persons => {
-      console.log("persons",persons)
-      console.log("persons.lenght:", persons.length)
+      console.log('persons',persons)
+      console.log('persons.lenght:', persons.length)
       response.send(
         `<div>
           <div> Phonebook has info for ${persons.length} people </div>
@@ -82,10 +82,10 @@ app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   const person = new Person({
-        name: body.name,
-        number: body.number,
+    name: body.name,
+    number: body.number,
   })
-  
+
   person.save()
     .then(savedPerson => {
       response.json(savedPerson)
@@ -95,7 +95,7 @@ app.post('/api/persons', (request, response, next) => {
 
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
-  
+
   Person.findById(request.params.id)
     .then(person => {
       if (!person) {
@@ -114,7 +114,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
