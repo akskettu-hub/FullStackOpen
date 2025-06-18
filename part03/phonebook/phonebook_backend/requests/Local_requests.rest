@@ -6,16 +6,16 @@ POST http://localhost:3001/api/persons/
 Content-Type: application/json
 
 {
-    "name": "Toby Deleted",
-    "number": "0980980986"
+    "name": "Mike Manflesh",
+    "number": "0234234234"
 }
 ###
-PUT http://localhost:3001/api/persons/6852992bca659e114aeb8723
+PUT http://localhost:3001/api/persons/6852a8c9944042cfa0bc118d
 Content-Type: application/json
 
 {
-    "name": "Toby Deleted",
-    "number": "098045656"
+    "name": "Frank Wolfman",
+    "number": "2342344"
 }
 ###
 DELETE http://localhost:3001/api/persons/6852992bca659e114aeb8723
