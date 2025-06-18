@@ -1,6 +1,6 @@
 GET http://localhost:3001/api/persons
 ###
-GET http://localhost:3001/api/persons/68514215c2c35873aea75e81
+GET http://localhost:3001/api/persons/68514f9a4fdb1368359c0379
 ###
 POST http://localhost:3001/api/persons/
 Content-Type: application/json
@@ -21,3 +21,6 @@ Content-Type: application/json
 DELETE http://localhost:3001/api/persons/6852992bca659e114aeb8723
 ###
 GET http://localhost:3001/api/persimons/
+
+###
+GET http://localhost:3001/info

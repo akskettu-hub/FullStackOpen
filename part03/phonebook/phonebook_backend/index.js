@@ -18,7 +18,6 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } 
-
   next(error)
 }
 
@@ -40,29 +39,6 @@ app.use(morgan('tiny', {
     skip: req => req.method === 'POST'
 }))
 
-let persons = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
-
 app.get('/', (request, response) => {
   response.send('<h1>Hello Squirrel!</h1>')
 })
@@ -74,14 +50,18 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/info', (request, response, next) => {
-  response.send(
-    `<div>
-        Phonebook has info for ${persons.length} people
-    </div>
-    <div>
-        ${new Date()}
-    </div>`
-  )
+  Person.find({})
+    .then(persons => {
+      console.log("persons",persons)
+      console.log("persons.lenght:", persons.length)
+      response.send(
+        `<div>
+          <div> Phonebook has info for ${persons.length} people </div>
+          <div>${new Date()}</div>
+        </div>`
+      )
+    })
+    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
