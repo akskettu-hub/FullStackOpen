@@ -136,8 +136,8 @@ const App = () => {
     if (confirm(`Delete ${person.name}?`)) {
       numberService
         .deleteEntry(person.id)
-        .then(response => {
-          setPersons(persons.filter((person) => person.id !== response.data.id))
+        .then(response => {         
+          setPersons(persons.filter((p) => p.id !== person.id))
           console.log(`Entry for ${person.name} (id:${person.id}) deleted from server`);
         })
     }
