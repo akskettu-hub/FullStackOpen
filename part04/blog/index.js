@@ -3,15 +3,16 @@ const mongoose = require('mongoose')
 
 const Blog = require('./models/blog')
 const config = require('./utils/config')
+const {info, error} = require('./utils/logger')
 
 const app = express()
 
 mongoose.connect(config.MONGODB_URI)
     .then(() => {
-        console.log('Connected to MongoDB')
+        info('Connected to MongoDB')
     })
     .catch(error => {
-        console.log('Error connecting to MongoDB', error)
+        error('Error connecting to MongoDB', error)
     })
 
 app.use(express.json())
@@ -24,7 +25,7 @@ app.get('/api/blogs', (request, response) => {
 
 app.post('/api/blogs', (request, response) => {
     const body = request.body
-    console.log(body)
+    info(body)
 
     const blog = new Blog({
     title: body.title,
@@ -39,5 +40,5 @@ app.post('/api/blogs', (request, response) => {
 })
 
 app.listen(config.PORT, () => {
-  console.log(`Server running on port ${config.PORT}`)
+  info(`Server running on port ${config.PORT}`)
 })
