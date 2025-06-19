@@ -1,14 +1,12 @@
-require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 
 const Blog = require('./models/blog')
+const config = require('./utils/config')
 
 const app = express()
 
-
-const mongoUrl = process.env.MONGODB_URI
-mongoose.connect(mongoUrl)
+mongoose.connect(config.MONGODB_URI)
     .then(() => {
         console.log('Connected to MongoDB')
     })
@@ -40,7 +38,6 @@ app.post('/api/blogs', (request, response) => {
   })
 })
 
-const PORT = process.env.PORT
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`)
 })
