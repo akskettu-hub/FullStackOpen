@@ -8,9 +8,8 @@ blogsRouter.get('/', (request, response) => {
   })
 })
 
-blogsRouter.post('/', (request, response) => {
+blogsRouter.post('/', (request, response, next) => {
     const body = request.body
-    info(body)
 
     const blog = new Blog({
     title: body.title,
@@ -19,9 +18,11 @@ blogsRouter.post('/', (request, response) => {
     likes: body.likes,
   })
 
-  blog.save().then((result) => {
+  blog.save()
+    .then((result) => {
     response.status(201).json(result)
-  })
+    })
+    .catch(error => next(error))
 })
 
 module.exports = blogsRouter
