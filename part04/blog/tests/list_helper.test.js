@@ -10,8 +10,7 @@ test('dummy returns one', () => {
   assert.strictEqual(result, 1)
 })
 
-describe('total likes', () => {
-  const listWithOneBlog = [
+const listWithOneBlog = [
     {
       _id: '5a422aa71b54a676234d17f8',
       title: 'Go To Statement Considered Harmful',
@@ -22,12 +21,7 @@ describe('total likes', () => {
     }
   ]
 
-  test('when list has only one blog, equals the likes of that', () => {
-    const result = listHelper.totalLikes(listWithOneBlog)
-    assert.strictEqual(result, 5)
-  })
-
-  const blogs = [
+const blogs = [
     {
       _id: "5a422a851b54a676234d17f7",
       title: "React patterns",
@@ -78,8 +72,27 @@ describe('total likes', () => {
     }  
   ]
 
+describe('total likes', () => {
+  test('when list has only one blog, equals the likes of that', () => {
+    const result = listHelper.totalLikes(listWithOneBlog)
+    assert.strictEqual(result, 5)
+  })
+
   test('when list many blog, equals the likes of those', () => {
     const result = listHelper.totalLikes(blogs)
     assert.strictEqual(result, 36)
   })
+})
+
+describe('Favourite blog', () => {
+  test('Blog with most likes, when there is only one blog', () => {
+    const result = listHelper.favouriteBlog(listWithOneBlog)
+    assert.deepStrictEqual(result, listWithOneBlog[0])
+  })
+
+  test('Blog with most likes, when there are many blog', () => {
+    const result = listHelper.favouriteBlog(blogs)
+    assert.deepStrictEqual(result, blogs[2])
+  })
+  
 })
