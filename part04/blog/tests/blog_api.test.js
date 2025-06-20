@@ -58,6 +58,11 @@ describe('api tests', () => {
         assert.strictEqual(response.body.length, initalBlogs.length)
     })
 
+    test('all blogs contain unique id property called id', async() => {
+        const response = await api.get('/api/blogs')
+        assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id")), true)
+        })
+
     after(async () => {
     await mongoose.connection.close()
     })
