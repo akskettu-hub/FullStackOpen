@@ -29,9 +29,36 @@ const mostBlogs = (blogs) => {
     return authors.reduce((maxBlogs, author) => maxBlogs.blogs < author.blogs ? author : maxBlogs )
 }
 
+/*Define a function called mostLikes that receives an array of blogs as its parameter. The function returns the author, whose blog posts have the largest amount of likes. The return value also contains the total number of likes that the author has received: */
+
+const mostLikes = (blogs) => {
+    let authors = {}
+
+    for (const blog of blogs) {
+        if (!authors.hasOwnProperty(blog.author)){
+            authors[blog.author] = blog.likes
+        } else {
+            authors[blog.author] += blog.likes
+        }
+    }
+
+    let maxAuthor = ''
+    let maxLikes = 0
+
+    for (const author in authors) {
+        if (authors[author] > maxLikes) {
+            maxAuthor = author
+            maxLikes = authors[author]
+        }
+    }
+
+    return {author: maxAuthor, likes: maxLikes}
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favouriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
