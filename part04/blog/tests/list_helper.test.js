@@ -92,5 +92,3 @@ describe('Most Likes', () => {
     })
   })
 })
-
-console.log(helperArrays.listWithOneBlog)
