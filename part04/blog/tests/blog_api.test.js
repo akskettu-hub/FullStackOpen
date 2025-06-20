@@ -28,11 +28,18 @@ const initalBlogs = [
     },
     {
         title: "More on Beans, by popular request",
-        author: "Gerals Garbanzo",
+        author: "Gerald Garbanzo",
         url: "blog.com/beans2",
-        likes: 12,
+        likes: 24,
     }
 ]
+
+const oneBlog = {
+    title: "Even more on beans. At this point, even I'm tired of writing about beans",
+    author: "Gerald Garbanzo",
+    url: "blog.com/beans2",
+    likes: 12,
+}
 
 beforeEach(async () => {
     await Blog.deleteMany({})
@@ -54,14 +61,26 @@ describe('api tests', () => {
 
     test('all blog are returned', async () => {
         const response = await api.get('/api/blogs')
-        
+        //console.log(response.body)
         assert.strictEqual(response.body.length, initalBlogs.length)
     })
 
-    test('all blogs contain unique id property called id', async() => {
+    test('all blogs contain unique id property called id', async () => {
         const response = await api.get('/api/blogs')
+        console.log(response.body)
         assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id")), true)
         })
+
+    test('POST request successfully creates a new blog post', async () => {
+        const blogObject = oneBlog
+        console.log(blogObject)
+
+        await api
+            .post('/api/blogs')
+            .send(blogObject)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+    })
 
     after(async () => {
     await mongoose.connection.close()
