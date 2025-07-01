@@ -4,21 +4,24 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const testHelper = require('../utils/test_helper')
 
 const api = supertest(app)
 
-beforeEach(async () => {
-    await Blog.deleteMany({})
 
-    const blogObjects = testHelper.initalBlogs
-        .map(blog => new Blog(blog))
-
-    const promiseArray = blogObjects.map(blog => blog.save())
-    await Promise.all(promiseArray)
-})
 
 describe('api tests', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({})
+
+        const blogObjects = testHelper.initalBlogs
+            .map(blog => new Blog(blog))
+
+        const promiseArray = blogObjects.map(blog => blog.save())
+        await Promise.all(promiseArray)
+    })
+
     test('blogs are returned as json', async () => {
         await api
             .get('/api/blogs')
@@ -161,8 +164,44 @@ describe('api tests', () => {
                 .expect(404)
         })
     })
+})
 
-    after(async () => {
-    await mongoose.connection.close()
+describe('when there are two users in database initially', () => {
+    beforeEach(async () => {
+        await User.deleteMany({})
+        await User.insertMany(testHelper.initialUsers)
     })
+
+    test('all users are returned with status code 200', async () => {
+        const response = await api
+            .get('/api/users')
+            .expect(200)
+
+        console.log(response.body)
+
+        //console.log(response.status)
+        
+        assert.strictEqual(response.body.length, testHelper.initialUsers.length)
+    })
+
+    test('POST request succeed with status code 201', async () => {
+        const newUser = {
+            username: "aeket",
+            name: "Akseli",
+            password: "passoword123",
+        }
+        
+        const response = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        //console.log(response.status)
+        //console.log(response.body)
+    })
+})
+
+after(async () => {
+    await mongoose.connection.close()
 })

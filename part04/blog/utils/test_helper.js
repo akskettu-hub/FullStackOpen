@@ -52,6 +52,19 @@ const missingUrlBlog = {
     likes: 12,
 }
 
+const initialUsers = [
+    {
+        username: 'root',
+        name: 'Superuser',
+        password: 'password987987'
+    },
+    {
+        username: 'Jim Bean',
+        name: 'James Bean',
+        password: 'beansbeansbeans'
+    },
+]
+
 const nonExistingId = async () => {
   const blog = new Blog({ 
     title: "temp title",
@@ -77,5 +90,6 @@ module.exports = {
     missingTitleBlog,
     missingUrlBlog,
     nonExistingId,
-    blogsInDb
+    blogsInDb,
+    initialUsers,
 }
