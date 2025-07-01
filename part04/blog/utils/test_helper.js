@@ -1,3 +1,5 @@
+const Blog = require('../models/blog')
+
 const initalBlogs = [
     {
         title: "Gleaming the Cube",
@@ -50,10 +52,30 @@ const missingUrlBlog = {
     likes: 12,
 }
 
+const nonExistingId = async () => {
+  const blog = new Blog({ 
+    title: "temp title",
+    author: "temp name",
+    url: "blog.com/temp",
+    likes: 55,
+  })
+  await blog.save()
+  await blog.deleteOne()
+
+  return blog._id.toString()
+}
+
+const blogsInDb = async () => {
+  const blogs = await Blog.find({})
+  return blogs.map((blog) => blog.toJSON())
+}
+
 module.exports = {
     initalBlogs,
     oneBlog,
     missingLikesBlog,
     missingTitleBlog,
-    missingUrlBlog
+    missingUrlBlog,
+    nonExistingId,
+    blogsInDb
 }

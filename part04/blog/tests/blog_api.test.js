@@ -28,83 +28,139 @@ describe('api tests', () => {
 
     test('all blog are returned', async () => {
         const response = await api.get('/api/blogs')
-        //console.log(response.body)
         assert.strictEqual(response.body.length, testHelper.initalBlogs.length)
     })
 
     test('all blogs contain unique id property called id', async () => {
         const response = await api.get('/api/blogs')
-        //console.log(response.body)
         assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id")), true)
         })
 
-    test('POST request successfully creates a new blog post', async () => {
-        const firstResponse = await api.get('/api/blogs')
-
-        const initialBlogsLength = firstResponse.body.length
-
-        const blogObject = testHelper.oneBlog
-        //console.log(blogObject)
-
-        await api
-            .post('/api/blogs')
-            .send(blogObject)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
-
-        const secondResponse = await api.get('/api/blogs')
-
-        //console.log(secondResponse.body.length, initialBlogsLength + 1)
-        //console.log(secondResponse.body);
+    test('A specific blog can be found with id', async () => {
+        const blogs = await api.get('/api/blogs')
+        const blogToView = blogs.body[0]
+        const id = blogToView.id
     
-        assert.strictEqual(secondResponse.body.length, initialBlogsLength + 1)
-    })
-
-    test('DELETE request succesfully removes an existing post', async ()=> {
-        const blogsAtStart = await api.get('/api/blogs')
-
-        const blogId = blogsAtStart.body[0].id
-
-        await api
-            .delete(`/api/blogs/${blogId}`)
-            .expect(204)
+        const response = await api.get(`/api/blogs/${id}`)
         
-        const blogsAtEnd = await api.get('/api/blogs')
+        assert.deepStrictEqual(response.body, blogToView)
+    })
 
-        const idsAtEnd = blogsAtEnd.body.map(blog => blog.id)
+    describe('Adding a new note', () => {
+        test('POST request succeeds with status code 201', async () => {
+            const firstResponse = await api.get('/api/blogs')
+            const initialBlogsLength = firstResponse.body.length
+            const blogObject = testHelper.oneBlog
+
+            await api
+                .post('/api/blogs')
+                .send(blogObject)
+                .expect(201)
+                .expect('Content-Type', /application\/json/)
+
+            const secondResponse = await api.get('/api/blogs')
         
-        assert(!idsAtEnd.includes(blogId))
+            assert.strictEqual(secondResponse.body.length, initialBlogsLength + 1)
+        })
 
-        assert.strictEqual(blogsAtStart.body.length - 1, blogsAtEnd.body.length)
+        test('If likes property is missing from post request, defaults to 0', async () => {
+            const response = await api
+                .post('/api/blogs')
+                .send(testHelper.missingLikesBlog)
+                .expect(201)
+                .expect('Content-Type', /application\/json/)
+
+            assert.strictEqual(response.body.likes, 0)
+        })
+
+        test('Missing title property returns 400', async () => {
+            await api
+                .post('/api/blogs')
+                .send(testHelper.missingTitleBlog)
+                .expect(400)
+                .expect('Content-Type', /application\/json/)
+        })
+
+        test('Missing URL property returns 400', async () => {
+            await api
+                .post('/api/blogs')
+                .send(testHelper.missingUrlBlog)
+                .expect(400)
+                .expect('Content-Type', /application\/json/)
+        })
     })
 
-    test('If likes property is missing from post request, defaults to 0', async () => {
-        const response = await api
-            .post('/api/blogs')
-            .send(testHelper.missingLikesBlog)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
+    describe('Deleting a blog', () => {
+        test('DELETE request succesfully removes an existing post with status code 204', async ()=> {
+            const blogsAtStart = await api.get('/api/blogs')
+            const blogId = blogsAtStart.body[0].id
 
-        assert.strictEqual(response.body.likes, 0)
+            await api
+                .delete(`/api/blogs/${blogId}`)
+                .expect(204)
+            
+            const blogsAtEnd = await api.get('/api/blogs')
+            const idsAtEnd = blogsAtEnd.body.map(blog => blog.id)
+            
+            assert(!idsAtEnd.includes(blogId))
+            assert.strictEqual(blogsAtStart.body.length - 1, blogsAtEnd.body.length)
+        })
+
+        test('Deleting a blog with an invalid id fails with status code 400', async () => {
+            await api
+                .delete('/api/blogs/abcd1234')
+                .expect(400)
+        })
+
+        test('Deleting a blog with a non-existent valid id fails with status code 404', async () => {
+            await api
+                .delete(`/api/blogs/${testHelper.nonExistingId}`)
+                .expect(404)
+        })
     })
 
-    test('Missing title property returns 400', async () => {
-        await api
-            .post('/api/blogs')
-            .send(testHelper.missingTitleBlog)
-            .expect(400)
-            .expect('Content-Type', /application\/json/)
-    })
+    describe('Updating a blog', () => {
+        test('Updating a blog succeeds with status code 200 with valid data', async () => {
+            const blogsAtStart = await api.get('/api/blogs')
+            const blogToUpdate = blogsAtStart.body[0]
 
-    test('Missing URL property returns 400', async () => {
-        await api
-            .post('/api/blogs')
-            .send(testHelper.missingUrlBlog)
-            .expect(400)
-            .expect('Content-Type', /application\/json/)
-    })
+            blogToUpdate.likes = 999
 
-    
+            await api
+                .put(`/api/blogs/${blogToUpdate.id}`)
+                .send(blogToUpdate)
+                .expect(200)
+
+            const responseUpdateBlog = await api.get(`/api/blogs/${blogToUpdate.id}`)
+            const updatedBlog = responseUpdateBlog.body
+
+            assert.deepStrictEqual(blogToUpdate, updatedBlog)
+        })
+
+        test('Updating a blog fails with status code 400 with invalid data', async () => {
+            const blogsAtStart = await api.get('/api/blogs')
+            const blogToUpdate = blogsAtStart.body[0]
+
+            blogToUpdate.likes = 'invalid data'
+
+            await api
+                .put(`/api/blogs/${blogToUpdate.id}`)
+                .send(blogToUpdate)
+                .expect(400)
+        })
+
+        test('Updating a blog fails with status code 404 with invalid id', async () => {
+            const blogsAtStart = await api.get('/api/blogs')
+            const blogToUpdate = blogsAtStart.body[0]
+
+            blogToUpdate.likes = 999
+
+            await api
+                .put(`/api/blogs/${testHelper.nonExistingId}`)
+                .send(blogToUpdate)
+                .expect(404)
+        })
+    })
 
     after(async () => {
     await mongoose.connection.close()
