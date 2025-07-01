@@ -60,6 +60,24 @@ describe('api tests', () => {
         assert.strictEqual(secondResponse.body.length, initialBlogsLength + 1)
     })
 
+    test('DELETE request succesfully removes an existing post', async ()=> {
+        const blogsAtStart = await api.get('/api/blogs')
+
+        const blogId = blogsAtStart.body[0].id
+
+        await api
+            .delete(`/api/blogs/${blogId}`)
+            .expect(204)
+        
+        const blogsAtEnd = await api.get('/api/blogs')
+
+        const idsAtEnd = blogsAtEnd.body.map(blog => blog.id)
+        
+        assert(!idsAtEnd.includes(blogId))
+
+        assert.strictEqual(blogsAtStart.body.length - 1, blogsAtEnd.body.length)
+    })
+
     test('If likes property is missing from post request, defaults to 0', async () => {
         const response = await api
             .post('/api/blogs')
@@ -85,6 +103,8 @@ describe('api tests', () => {
             .expect(400)
             .expect('Content-Type', /application\/json/)
     })
+
+    
 
     after(async () => {
     await mongoose.connection.close()
