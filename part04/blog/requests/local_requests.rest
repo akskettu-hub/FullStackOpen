@@ -2,7 +2,7 @@ GET http://localhost:3003/api/blogs
 ###
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFuZHkiLCJpZCI6IjY4NjNiZTM2YTUxYWRhNmJjNDk1ZmQ4YSIsImlhdCI6MTc1MTM3MDExOH0.uZJ4msA0iOKjF2KtutN8r0-8Sk3CpM8jGd-D65uVYhE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY4NjNiODI1ZmJjNmM2YjQ0NjhhZWM2ZiIsImlhdCI6MTc1MTM3MjMwM30.uhZKFJemBAlDxry06aehmuB-U9lo-SHzBDj-Uujz2oc
 
 {
     "title": "sdfsdf",
@@ -11,7 +11,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFuZ
     "likes": 7
 }
 ###
-DELETE http://localhost:3003/api/blogs/6863b947b81f36c397b3d845
+DELETE http://localhost:3003/api/blogs/6863bbcdfaa9436cd247100d
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFuZHkiLCJpZCI6IjY4NjNiZTM2YTUxYWRhNmJjNDk1ZmQ4YSIsImlhdCI6MTc1MTM3MjQ0N30.z6gf18_vTvDAAqNpEUG423h1ACHmd-VjCjlweTMdKiQ
 
 
 ###
@@ -19,7 +21,7 @@ POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "username": "Andy",
+    "username": "root",
     "name": "Andrew",
     "password": "password987987"
 }
