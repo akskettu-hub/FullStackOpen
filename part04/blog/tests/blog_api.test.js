@@ -169,6 +169,7 @@ describe('api tests', () => {
 describe('when there are two users in database initially', () => {
     beforeEach(async () => {
         await User.deleteMany({})
+        await User.ensureIndexes() // This makes sure inecies are included. needed to make username uniqueness check work
         await User.insertMany(testHelper.initialUsers)
     })
 
@@ -176,15 +177,13 @@ describe('when there are two users in database initially', () => {
         const response = await api
             .get('/api/users')
             .expect(200)
-
-        console.log(response.body)
-
-        //console.log(response.status)
         
         assert.strictEqual(response.body.length, testHelper.initialUsers.length)
     })
 
-    test('POST request succeed with status code 201', async () => {
+    test('POST request with valid data succeed with status code 201', async () => {
+        const usersAtStart = await testHelper.usersInDb() 
+        
         const newUser = {
             username: "aeket",
             name: "Akseli",
@@ -197,8 +196,62 @@ describe('when there are two users in database initially', () => {
             .expect(201)
             .expect('Content-Type', /application\/json/)
 
-        //console.log(response.status)
-        //console.log(response.body)
+        const usersAtEnd = await testHelper.usersInDb()
+        assert.strictEqual(usersAtStart.length + 1, usersAtEnd.length)
+    })
+
+    test('Invalid username fails with status code 400, with proper error message', async () => {
+        const usersAtStart = await testHelper.usersInDb() 
+        
+        const newUser = {
+            username: "abc",
+            name: "abc",
+            password: "passoword123",
+        }
+
+        const response = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+
+        assert.strictEqual(response.body.error, 'username must be at least 3 characters long')
+
+        const usersAtEnd = await testHelper.usersInDb()
+        assert.strictEqual(usersAtStart.length, usersAtEnd.length)
+    })
+
+    test('Invalid password fails with status code 400, with proper error message', async () => {
+        const usersAtStart = await testHelper.usersInDb() 
+        
+        const newUser = {
+            username: "abcd",
+            name: "abc",
+            password: "123",
+        }
+
+        const response = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+
+        assert.strictEqual(response.body.error, 'password must be at least 3 characters long')
+
+        const usersAtEnd = await testHelper.usersInDb()
+        assert.strictEqual(usersAtStart.length, usersAtEnd.length)
+    })
+
+    test('creation fails with username already in db, with status code 400 and proper error message', async () => {
+        const usersAtStart = await testHelper.usersInDb()      
+
+        const response = await api
+            .post('/api/users')
+            .send(testHelper.initialUsers[0])
+            .expect(400)
+
+        assert.strictEqual(response.body.error, 'expected `username` to be unique')
+
+        const usersAtEnd = await testHelper.usersInDb()
+        assert.strictEqual(usersAtStart.length, usersAtEnd.length)
     })
 })
 
