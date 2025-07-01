@@ -4,9 +4,24 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "More on Beans, by popular request",
-    "author": "Gerals Garbanzo",
-    "url": "blog.com/beans2",
-    "likes": 12
+    "title": "Wallop",
+    "author": "Andrew Somaire",
+    "url": "blog.com/andrew2",
+    "likes": 45
 }
+###
+DELETE http://localhost:3003/api/blogs/6863b947b81f36c397b3d845
+
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "Andy",
+    "name": "Andrew",
+    "password": "password987987"
+}
+### 
+GET http://localhost:3003/api/users
 
