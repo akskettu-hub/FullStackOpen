@@ -67,20 +67,32 @@ describe('api tests', () => {
 
     test('all blogs contain unique id property called id', async () => {
         const response = await api.get('/api/blogs')
-        console.log(response.body)
+        //console.log(response.body)
         assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id")), true)
         })
 
     test('POST request successfully creates a new blog post', async () => {
+        const fistResponse = await api.get('/api/blogs')
+
+        const initialBlogsLength = fistResponse.body.length
+
         const blogObject = oneBlog
-        console.log(blogObject)
+        //console.log(blogObject)
 
         await api
             .post('/api/blogs')
             .send(blogObject)
             .expect(201)
             .expect('Content-Type', /application\/json/)
+
+        const secondResponse = await api.get('/api/blogs')
+
+        //console.log(secondResponse.body.length, initialBlogsLength + 1)
+        //console.log(secondResponse.body);
+    
+        assert.strictEqual(secondResponse.body.length, initialBlogsLength + 1)
     })
+
 
     after(async () => {
     await mongoose.connection.close()
