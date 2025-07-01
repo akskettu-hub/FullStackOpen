@@ -4,53 +4,14 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const testHelper = require('../utils/test_helper')
 
 const api = supertest(app)
-
-const initalBlogs = [
-    {
-        title: "Gleaming the Cube",
-        author: "Michael Trapezoid",
-        url: "blog.com/cube_trapezoid",
-        likes: 8,
-    },
-    {
-        title: "Running Backend",
-        author: "John James",
-        url: "blog.com/running_backend_james",
-        likes: 1,
-    },
-    {
-        title: "Beans",
-        author: "Gerals Garbanzo",
-        url: "blog.com/beans",
-        likes: 12,
-    },
-    {
-        title: "More on Beans, by popular request",
-        author: "Gerald Garbanzo",
-        url: "blog.com/beans2",
-        likes: 24,
-    }
-]
-
-const oneBlog = {
-    title: "Even more on beans. At this point, even I'm tired of writing about beans",
-    author: "Gerald Garbanzo",
-    url: "blog.com/beans2",
-    likes: 12,
-}
-
-const missingLikesBlog = {
-    title: "Beans: Redux",
-    author: "Gerald Garbanzo",
-    url: "blog.com/beansredux",
-}
 
 beforeEach(async () => {
     await Blog.deleteMany({})
 
-    const blogObjects = initalBlogs
+    const blogObjects = testHelper.initalBlogs
         .map(blog => new Blog(blog))
 
     const promiseArray = blogObjects.map(blog => blog.save())
@@ -68,7 +29,7 @@ describe('api tests', () => {
     test('all blog are returned', async () => {
         const response = await api.get('/api/blogs')
         //console.log(response.body)
-        assert.strictEqual(response.body.length, initalBlogs.length)
+        assert.strictEqual(response.body.length, testHelper.initalBlogs.length)
     })
 
     test('all blogs contain unique id property called id', async () => {
@@ -78,11 +39,11 @@ describe('api tests', () => {
         })
 
     test('POST request successfully creates a new blog post', async () => {
-        const fistResponse = await api.get('/api/blogs')
+        const firstResponse = await api.get('/api/blogs')
 
-        const initialBlogsLength = fistResponse.body.length
+        const initialBlogsLength = firstResponse.body.length
 
-        const blogObject = oneBlog
+        const blogObject = testHelper.oneBlog
         //console.log(blogObject)
 
         await api
@@ -102,11 +63,27 @@ describe('api tests', () => {
     test('If likes property is missing from post request, defaults to 0', async () => {
         const response = await api
             .post('/api/blogs')
-            .send(missingLikesBlog)
+            .send(testHelper.missingLikesBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
 
         assert.strictEqual(response.body.likes, 0)
+    })
+
+    test('Missing title property returns 400', async () => {
+        await api
+            .post('/api/blogs')
+            .send(testHelper.missingTitleBlog)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+    })
+
+    test('Missing URL property returns 400', async () => {
+        await api
+            .post('/api/blogs')
+            .send(testHelper.missingUrlBlog)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
     })
 
     after(async () => {
