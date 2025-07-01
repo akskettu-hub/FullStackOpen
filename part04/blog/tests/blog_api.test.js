@@ -41,6 +41,12 @@ const oneBlog = {
     likes: 12,
 }
 
+const missingLikesBlog = {
+    title: "Beans: Redux",
+    author: "Gerald Garbanzo",
+    url: "blog.com/beansredux",
+}
+
 beforeEach(async () => {
     await Blog.deleteMany({})
 
@@ -93,6 +99,15 @@ describe('api tests', () => {
         assert.strictEqual(secondResponse.body.length, initialBlogsLength + 1)
     })
 
+    test('If likes property is missing from post request, defaults to 0', async () => {
+        const response = await api
+            .post('/api/blogs')
+            .send(missingLikesBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        assert.strictEqual(response.body.likes, 0)
+    })
 
     after(async () => {
     await mongoose.connection.close()
