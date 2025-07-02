@@ -107,20 +107,22 @@ const getRootAuth = async (api) => {
         username: 'root',
         password: 'password987987',
     }
-    //const username = loginInfo.username
-
-    //const user = await User.findOne({ username })
-
-    //console.log(user);
     
     const response = await api
         .post('/api/login')
         .send(loginInfo)
-    
-    //console.log('Status:', response.status);
-    //console.log('Body:', response.body);
 
     return response.body.token
+}
+
+const blogsWithUser = (userId) => {
+    const blogs = initalBlogs
+        .map(blog => ({...blog, user: userId}))
+    
+    const blogObjects = blogs
+        .map(blog => new Blog(blog))
+
+    return blogObjects
 }
 
 module.exports = {
@@ -135,4 +137,5 @@ module.exports = {
     usersInDb,
     initialiseRootUser,
     getRootAuth,
+    blogsWithUser,
 }
