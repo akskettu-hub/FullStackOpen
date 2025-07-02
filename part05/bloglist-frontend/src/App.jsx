@@ -7,7 +7,6 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')   
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -15,6 +14,8 @@ const App = () => {
   const [title, setBlogTitle] = useState('')
   const [author, setBlogAuthor] = useState('')
   const [url, setBlogUrl] = useState('')
+
+  const [notification, setNotification] = useState({ message: null })
 
 
   useEffect(() => {
@@ -33,8 +34,7 @@ const App = () => {
    }, [])
 
   const handleLogin = async (event) => {    
-    event.preventDefault()    
-    //console.log('logging in with', username, password)
+    event.preventDefault()
 
     try {
       const user = await loginService.login({
@@ -48,19 +48,11 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        setErrorMessage('Wrong credentials')
-      } else {
-        setErrorMessage('Something wrong with login')
-      }
-      
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
+    } catch (exception) {
+      notifyWith('Wrong credentials', true)
+    }     
   }
-
+  
   const handleCreateBlog = async (event) => {
     event.preventDefault()
     
@@ -69,16 +61,20 @@ const App = () => {
         title, author, url 
       })
       console.log('blog created:', blog)
-
+      notifyWith(`a new blog ${blog.title} by ${blog.author} added`)
       setBlogTitle('')
       setBlogAuthor('')
       setBlogUrl('')
     } catch (exception) {
-      setErrorMessage('creation failed')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      notifyWith('creation failed', true) 
     }
+  }
+
+  const notifyWith = (message, isError = false) => {
+    setNotification({ message, isError })
+    setTimeout(() => {
+      setNotification({ message: null })
+    }, 5000)
   }
 
   const loginForm = () => (
@@ -143,14 +139,12 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
   }
 
-  
-
   if (user === null) {
     return (
       <div>
         <h2>Log in to application</h2>
         
-        <Notification errorMessage={errorMessage} />
+        <Notification notification={notification} />
         
         {loginForm()}
         
@@ -161,6 +155,9 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+
+      <Notification notification={notification}/>
+
       <p>
         {`${user.name} logged in`}
         <button onClick={logoutHandler}>logout</button>
