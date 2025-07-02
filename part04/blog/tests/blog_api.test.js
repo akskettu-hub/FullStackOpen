@@ -7,56 +7,73 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const testHelper = require('../utils/test_helper')
 
+
+
 const api = supertest(app)
 
-
-
 describe('api tests', () => {
-    beforeEach(async () => {
-        await Blog.deleteMany({})
+    describe('blogs basics', () => {
+        beforeEach(async () => {
+            await Blog.deleteMany({})
 
-        const blogObjects = testHelper.initalBlogs
-            .map(blog => new Blog(blog))
+            const blogObjects = testHelper.initalBlogs
+                .map(blog => new Blog(blog))
 
-        const promiseArray = blogObjects.map(blog => blog.save())
-        await Promise.all(promiseArray)
-    })
-
-    test('blogs are returned as json', async () => {
-        await api
-            .get('/api/blogs')
-            .expect(200)
-            .expect('Content-Type', /application\/json/)
+            const promiseArray = blogObjects.map(blog => blog.save())
+            await Promise.all(promiseArray)
         })
 
-    test('all blog are returned', async () => {
-        const response = await api.get('/api/blogs')
-        assert.strictEqual(response.body.length, testHelper.initalBlogs.length)
-    })
+        test('blogs are returned as json', async () => {
+            await api
+                .get('/api/blogs')
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+            })
 
-    test('all blogs contain unique id property called id', async () => {
-        const response = await api.get('/api/blogs')
-        assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id")), true)
+        test('all blog are returned', async () => {
+            const response = await api.get('/api/blogs')
+            assert.strictEqual(response.body.length, testHelper.initalBlogs.length)
         })
 
-    test('A specific blog can be found with id', async () => {
-        const blogs = await api.get('/api/blogs')
-        const blogToView = blogs.body[0]
-        const id = blogToView.id
-    
-        const response = await api.get(`/api/blogs/${id}`)
+        test('all blogs contain unique id property called id', async () => {
+            const response = await api.get('/api/blogs')
+            assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id")), true)
+            })
+
+        test('A specific blog can be found with id', async () => {
+            const blogs = await api.get('/api/blogs')
+            const blogToView = blogs.body[0]
+            const id = blogToView.id
         
-        assert.deepStrictEqual(response.body, blogToView)
-    })
+            const response = await api.get(`/api/blogs/${id}`)
+            
+            assert.deepStrictEqual(response.body, blogToView)
+        })
+    })    
 
     describe('Adding a new note', () => {
+        beforeEach(async () => {
+            await User.deleteMany({})
+            await User.ensureIndexes() // This makes sure inecies are included. needed to make username uniqueness check work
+            const rootUser = await testHelper.initialiseRootUser()
+            await rootUser.save()
+        })
+
+        test('get auth', async () => {
+            const token = await testHelper.getRootAuth(api)
+            //console.log(token)
+        })
+
         test('POST request succeeds with status code 201', async () => {
+            const token = await testHelper.getRootAuth(api)
+
             const firstResponse = await api.get('/api/blogs')
             const initialBlogsLength = firstResponse.body.length
             const blogObject = testHelper.oneBlog
 
             await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
                 .send(blogObject)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
@@ -67,8 +84,11 @@ describe('api tests', () => {
         })
 
         test('If likes property is missing from post request, defaults to 0', async () => {
+            const token = await testHelper.getRootAuth(api)
+            
             const response = await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
                 .send(testHelper.missingLikesBlog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
@@ -77,16 +97,22 @@ describe('api tests', () => {
         })
 
         test('Missing title property returns 400', async () => {
+            const token = await testHelper.getRootAuth(api)
+
             await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
                 .send(testHelper.missingTitleBlog)
                 .expect(400)
                 .expect('Content-Type', /application\/json/)
         })
 
         test('Missing URL property returns 400', async () => {
+            const token = await testHelper.getRootAuth(api)
+
             await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
                 .send(testHelper.missingUrlBlog)
                 .expect(400)
                 .expect('Content-Type', /application\/json/)
@@ -94,12 +120,22 @@ describe('api tests', () => {
     })
 
     describe('Deleting a blog', () => {
+        beforeEach(async () => {
+            await User.deleteMany({})
+            await User.ensureIndexes() // This makes sure inecies are included. needed to make username uniqueness check work
+            const rootUser = await testHelper.initialiseRootUser()
+            await rootUser.save()
+        })
+
         test('DELETE request succesfully removes an existing post with status code 204', async ()=> {
             const blogsAtStart = await api.get('/api/blogs')
             const blogId = blogsAtStart.body[0].id
+            
+            const token = await testHelper.getRootAuth(api)
 
             await api
                 .delete(`/api/blogs/${blogId}`)
+                .set('Authorization', `Bearer ${token}`)
                 .expect(204)
             
             const blogsAtEnd = await api.get('/api/blogs')

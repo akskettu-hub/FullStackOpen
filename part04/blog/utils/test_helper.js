@@ -1,5 +1,6 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 const initalBlogs = [
     {
@@ -89,6 +90,39 @@ const usersInDb = async () => {
   return users.map((user) => user.toJSON())
 }
 
+const initialiseRootUser = async () => {
+    const passwordHash = await bcrypt.hash('password987987', 10)
+    
+    const rootUser = new User({
+        username: 'root',
+        name: 'Superuser',
+        passwordHash
+    })
+
+    return rootUser
+}
+
+const getRootAuth = async (api) => {
+    const loginInfo = {
+        username: 'root',
+        password: 'password987987',
+    }
+    //const username = loginInfo.username
+
+    //const user = await User.findOne({ username })
+
+    //console.log(user);
+    
+    const response = await api
+        .post('/api/login')
+        .send(loginInfo)
+    
+    //console.log('Status:', response.status);
+    //console.log('Body:', response.body);
+
+    return response.body.token
+}
+
 module.exports = {
     initalBlogs,
     oneBlog,
@@ -99,4 +133,6 @@ module.exports = {
     blogsInDb,
     initialUsers,
     usersInDb,
+    initialiseRootUser,
+    getRootAuth,
 }
