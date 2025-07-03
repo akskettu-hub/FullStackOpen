@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blog, updateLike }) => {
+const Blog = ({ blog, updateLike, userId, removeBlog }) => {
   const [detailsVisible, setDetailsVisible] = useState(false)
 
   const blogStyle = {
@@ -27,8 +27,18 @@ const Blog = ({ blog, updateLike }) => {
       },
       blogId: blog.id
     })
+  }
 
-  } 
+  const userIsBlogCreator = (blog.user.id === userId)
+  const showWhencreator = { display: userIsBlogCreator ? '' : 'none' }
+
+  const handleRemoveClick = () => {
+    console.log('clicked remove')
+
+    window.confirm(`Are you sure you want to remove ${blog.title} by ${blog.author}` )
+    ? removeBlog(blog.id)
+    : console.log('clicked cancel remove')
+  }
 
   return (
     <div style={blogStyle}>
@@ -53,6 +63,7 @@ const Blog = ({ blog, updateLike }) => {
         <div>
           {blog.user.name}
         </div>
+        <button onClick={handleRemoveClick} style={showWhencreator}>remove</button>
       </div>
     </div>
   )
