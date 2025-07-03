@@ -72,4 +72,13 @@ describe('<Blog />', () => {
     const div = container.querySelector('.DetailsShown')
     expect(div).not.toHaveStyle('display: none')
   })
+
+  test('when like button is clicked twice, handler is called twice', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('like')
+    await user.click(button)
+    await user.click(button)
+
+    expect(mockUpdateLike.mock.calls).toHaveLength(2)
+  })
 })
