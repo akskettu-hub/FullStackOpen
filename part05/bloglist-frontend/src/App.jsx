@@ -12,7 +12,7 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
 
   const [loginVisible, setLoginVisible] = useState(false)
-  const [username, setUsername] = useState('')   
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
@@ -22,19 +22,18 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )
-    console.log(blogs)
   }, [])
 
-  useEffect(() => {    
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')    
-    if (loggedUserJSON) {      
-      const user = JSON.parse(loggedUserJSON)      
-      setUser(user)      
-      blogService.setToken(user.token)    
-    } 
-   }, [])
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
 
-  const handleLogin = async (event) => {    
+  const handleLogin = async (event) => {
     event.preventDefault()
 
     console.log('got to handleLogin', username, password)
@@ -53,19 +52,19 @@ const App = () => {
       setPassword('')
     } catch (exception) {
       notifyWith('Wrong credentials', true)
-    }     
+    }
   }
-  
+
   const createBlog = async (newBlog) => {
-        
+
     try {
       const blog = await blogService.create( newBlog )
       console.log('blog created:', blog)
       notifyWith(`a new blog ${blog.title} by ${blog.author} added`)
       setBlogs(blogs.concat(blog))
-      
+
     } catch (exception) {
-      notifyWith('creation failed', true) 
+      notifyWith('creation failed', true)
     }
   }
 
@@ -105,20 +104,18 @@ const App = () => {
   }
 
   const updateLike = async (updateData) => {
-    //console.log("updated blog:", updateData.updatedBlog, updateData.blogId)
 
     try {
       const updatedBlog = await blogService.updateLikes( updateData.updatedBlog, updateData.blogId )
-      console.log('likes updated:', updatedBlog)
+      console.log('likes updated:', updatedBlog.id)
       notifyWith(`Likes for ${updatedBlog.title} by ${updatedBlog.author} updated`)
-      //setBlogs(blogs.concat(blog))
 
       setBlogs(blogs.map(blog =>
         blog.id === updatedBlog.id ? updatedBlog : blog
       ))
-      
+
     } catch (exception) {
-      notifyWith('creation failed', true) 
+      notifyWith('creation failed', true)
     }
   }
 
@@ -127,24 +124,24 @@ const App = () => {
 
     try {
       const removedBlog = await blogService.deleteBlog(blogId)
-      console.log(`removed blog ${blogId}`)   
-      
+      console.log(`removed blog ${blogId}`)
+
       const updatedBlogs = blogs.filter(b => b.id !== blogId)
       setBlogs(updatedBlogs)
 
     } catch (exception) {
-      notifyWith('Removing blog failed', true) 
+      notifyWith('Removing blog failed', true)
     }
   }
 
   if (user === null) {
     return (
       <div>
-        
+
         <Notification notification={notification} />
-        
+
         {loginForm()}
-        
+
       </div>
     )
   }
