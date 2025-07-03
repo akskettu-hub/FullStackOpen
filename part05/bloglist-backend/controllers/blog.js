@@ -65,9 +65,13 @@ blogsRouter.put('/:id', async (request, response) => {
     blog.author = body.author
     blog.url = body.url
     blog.likes = body.likes
+    //blog.user = body.user
 
-    const updatedNote = await blog.save()
-    response.json(updatedNote)
+    const updatedBlog = await blog.save()
+    const populatedBlog = await updatedBlog.populate('user')
+
+    response.json(populatedBlog)
+
   } else {
     response.status(404).end()
   }

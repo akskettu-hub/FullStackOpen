@@ -104,6 +104,24 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
   }
 
+  const updateLike = async (updateData) => {
+    //console.log("updated blog:", updateData.updatedBlog, updateData.blogId)
+
+    try {
+      const updatedBlog = await blogService.updateLikes( updateData.updatedBlog, updateData.blogId )
+      console.log('likes updated:', updatedBlog)
+      notifyWith(`Likes for ${updatedBlog.title} by ${updatedBlog.author} updated`)
+      //setBlogs(blogs.concat(blog))
+
+      setBlogs(blogs.map(blog =>
+        blog.id === updatedBlog.id ? updatedBlog : blog
+      ))
+      
+    } catch (exception) {
+      notifyWith('creation failed', true) 
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -136,7 +154,7 @@ const App = () => {
       }
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateLike={updateLike} />
       )}
     </div>
   )
