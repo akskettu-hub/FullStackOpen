@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import Blog from './Blog'
 import { beforeEach, describe } from 'vitest'
+import userEvent from '@testing-library/user-event'
 
 describe('<Blog />', () => {
   const blog = {
@@ -61,5 +62,14 @@ describe('<Blog />', () => {
     const div = container.querySelector('.DetailsHidden')
     const scope = within(div)
     expect(scope.queryByText('Likes:')).toBeNull()
+  })
+
+  test('after clicking the button, details are displayed', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('view')
+    await user.click(button)
+
+    const div = container.querySelector('.DetailsShown')
+    expect(div).not.toHaveStyle('display: none')
   })
 })
