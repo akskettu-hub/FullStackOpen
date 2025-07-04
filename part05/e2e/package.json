@@ -4,13 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test --project chromium",
+    "test": "playwright test",
     "test:report": "playwright show-report"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.53.2",
     "@types/node": "^24.0.10"

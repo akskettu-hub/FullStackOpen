@@ -137,6 +137,7 @@ const App = () => {
   if (user === null) {
     return (
       <div>
+        <h1>Blogs App</h1>
 
         <Notification notification={notification} />
 
@@ -148,7 +149,7 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
+      <h2>Blogs App</h2>
 
       <Notification notification={notification}/>
 
