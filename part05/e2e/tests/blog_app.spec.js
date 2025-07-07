@@ -1,5 +1,5 @@
 const { describe, test, expect, beforeEach } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -52,4 +52,41 @@ describe('Blog app', () => {
       await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
     })
   })
+
+  describe('When logged in ', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'testuser', 'password123')
+    })
+
+    test('new blog form is not visible by default', async ({ page }) => {
+      await expect(page.getByRole('button', { name: 'new blog' })).toBeVisible()
+    })
+
+    test('new blog form fields and submit button are visible', async ({ page }) => {
+      await page.getByRole('button', { name: 'new blog' }).click()
+
+      await expect(page.locator('#title-input')).toBeVisible()
+      await expect(page.locator('#author-input')).toBeVisible()
+      await expect(page.locator('#url-input')).toBeVisible()
+
+      await expect(page.getByRole('button', { name: 'create' })).toBeVisible()
+      await expect(page.getByRole('button', { name: 'cancel' })).toBeVisible()
+    })
+
+    test('new blog can be created', async ({ page }) => {
+      const newBlog = {
+        title: 'example Blog',
+        author: 'example Author',
+        url: 'test.com/exampleBlog'
+      }
+      
+      await createBlog(page, newBlog)
+
+      const blogOnPage = await page.locator('.DetailsHidden')
+
+      await expect(blogOnPage).toContainText(newBlog.title)
+      await expect(blogOnPage).toBeVisible
+    })
+  })
+  
 })
