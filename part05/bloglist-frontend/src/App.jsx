@@ -129,6 +129,8 @@ const App = () => {
       const updatedBlogs = blogs.filter(b => b.id !== blogId)
       setBlogs(updatedBlogs)
 
+      notifyWith('Removed blog successfully', false)
+
     } catch (exception) {
       notifyWith('Removing blog failed', true)
     }

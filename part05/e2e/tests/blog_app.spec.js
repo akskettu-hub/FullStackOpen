@@ -56,6 +56,7 @@ describe('Blog app', () => {
   describe('When logged in ', () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, 'testuser', 'password123')
+      await page.getByText('Test User logged in').waitFor({ timeout: 5000 })
     })
 
     test('new blog form is not visible by default', async ({ page }) => {
@@ -104,6 +105,42 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'like' }).click()
       await expect(likesText).toContainText('Likes: 1')  
     })
-  })
-  
+
+    test('remove button can be seen by user who created the blog', async ({ page }) => {
+      const newBlog = {
+        title: 'example Blog',
+        author: 'example Author',
+        url: 'test.com/exampleBlog'
+      }
+      
+      await createBlog(page, newBlog)
+
+      await page.getByRole('button', { name: 'view' }).click()
+
+      await expect(page.getByRole('button', { name: 'remove' })).toBeVisible()
+    })
+
+    test('a blog can be deleted by the user that created the blog', async ({ page }) => {
+      const newBlog = {
+        title: 'example Blog',
+        author: 'example Author',
+        url: 'test.com/exampleBlog'
+      }
+      
+      await createBlog(page, newBlog)
+
+      await page.getByRole('button', { name: 'view' }).click()
+
+      page.on('dialog', async (dialog) => {
+        console.log(`Dialog message: ${dialog.message()}`)
+        await dialog.accept()
+      })
+
+      await page.getByRole('button', { name: 'remove' }).click()
+
+      await expect(page.getByText('Removed blog successfully')).toBeVisible()
+
+      await expect(page.getByText(newBlog.title)).toHaveCount(0)
+    })
+  }) 
 })

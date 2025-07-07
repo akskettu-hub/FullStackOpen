@@ -64,7 +64,7 @@ const Blog = ({ blog, updateLike, userId, removeBlog }) => {
         <div>
           {blog.user.name}
         </div>
-        <button onClick={handleRemoveClick} style={showWhencreator}>remove</button>
+        <button data-testid='remove-button' onClick={handleRemoveClick} style={showWhencreator}>remove</button>
       </div>
     </div>
   )
