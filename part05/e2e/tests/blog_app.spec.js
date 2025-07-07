@@ -87,6 +87,23 @@ describe('Blog app', () => {
       await expect(blogOnPage).toContainText(newBlog.title)
       await expect(blogOnPage).toBeVisible
     })
+
+    test('blog can be liked', async ({ page }) => {
+      const newBlog = {
+        title: 'example Blog',
+        author: 'example Author',
+        url: 'test.com/exampleBlog'
+      }
+      
+      await createBlog(page, newBlog)
+
+      await page.getByRole('button', { name: 'view' }).click()
+      const likesText = page.locator('.DetailsShown >> text=Likes:')
+      await expect(likesText).toContainText('Likes: 0')
+      
+      await page.getByRole('button', { name: 'like' }).click()
+      await expect(likesText).toContainText('Likes: 1')  
+    })
   })
   
 })
