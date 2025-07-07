@@ -42,7 +42,7 @@ const Blog = ({ blog, updateLike, userId, removeBlog }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div data-testid='blog-item' style={blogStyle}>
       <div className='DetailsHidden' style={hideWhenVisible}>
         {blog.title} {blog.author}
 

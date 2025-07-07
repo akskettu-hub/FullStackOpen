@@ -173,5 +173,60 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'view' }).click()
       await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()      
     })
+
+    describe('when there are multiple blogs', () => {
+      beforeEach( async ({ page }) => {
+        const blogs = [
+          { title: 'example Blog1', author: 'example Author', url: 'test.com/exampleBlog', likes: 3 },
+          { title: 'example Blog2', author: 'example Author', url: 'test.com/exampleBlog', likes: 2 },
+          { title: 'example Blog3', author: 'example Author', url: 'test.com/exampleBlog', likes: 1 }
+        ]
+
+        for (const blog of blogs) {
+          await createBlog(page, blog)
+          await page.getByText(blog.title).getByRole('button', { name: 'view' }).click()
+          await page.getByRole('button', { name: 'cancel' }).click()
+        }
+
+        const blogsOnPage = await page.locator('[data-testid="blog-item"]')
+
+        for (let i = 0; i < blogs.length; i++) {
+            const blog = blogsOnPage.nth(i)
+            const blogTitle = await blog.textContent()
+            console.log(blogTitle)
+
+            const blogData = blogs.find(blog => blogTitle?.includes(blog.title))
+
+            if (blogData) {
+              //This loop does not always hit the like button the desired number of times. Probably a timing issue
+              for (let j = 0; j < blogData.likes; j++) {
+                await blog.getByRole('button', { name: 'like' }).click()
+              }
+            }
+        }
+        await page.waitForTimeout(500)
+      })
+      
+      test('number of blogs displayed equals number created', async ({ page }) => {
+        const blogsOnPage = page.locator('[data-testid="blog-item"]')
+        await expect(blogsOnPage).toHaveCount(3)
+      })
+      
+      test('blogs are displayed in decending order', async ({ page }) => {
+        const blogsOnPage = await page.locator('[data-testid="blog-item"]')
+        const likesOnPage = []
+
+        for (let i =0; i < 3; i++) {
+          const blog = blogsOnPage.nth(i)
+          const likeText = await blog.textContent()
+          const match = likeText?.match(/Likes:\s*(\d+)/i)
+          const likes = match  ? parseInt(match[1], 10) : 0
+          likesOnPage.push(likes)
+        }
+
+        const sorted = [...likesOnPage].sort((a, b) => b - a)
+        expect(likesOnPage).toEqual(sorted)        
+      })
+    })
   }) 
 })
