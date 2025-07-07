@@ -142,5 +142,36 @@ describe('Blog app', () => {
 
       await expect(page.getByText(newBlog.title)).toHaveCount(0)
     })
+
+    test('remove button is not visible to user who is not creator', async ({ page, request }) => {
+      await request.post('http://localhost:3003/api/users', {
+        data: {
+          name: 'Test User2',
+          username: 'testuser2',
+          password: 'password123'
+        }
+      })
+      
+      const newBlog = {
+        title: 'example Blog',
+        author: 'example Author',
+        url: 'test.com/exampleBlog'
+      }
+      
+      await createBlog(page, newBlog)
+
+      await expect(page.getByText(`a new blog ${newBlog.title} by ${newBlog.author} added`)).toBeVisible()
+
+      await page.getByRole('button', { name: 'logout' }).click()
+
+      await page.getByTestId('username').fill('testuser2')
+      await page.getByTestId('password').fill('password123')
+      await page.getByRole('button', { name: 'login' }).click()
+
+      await expect(page.getByText('Test User2 logged in')).toBeVisible()
+
+      await page.getByRole('button', { name: 'view' }).click()
+      await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()      
+    })
   }) 
 })
