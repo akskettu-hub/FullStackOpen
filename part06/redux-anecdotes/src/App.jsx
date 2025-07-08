@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { voteForAnecdote } from './reducers/anecdoteReducer'
+import { voteForAnecdote, newAnecdote } from './reducers/anecdoteReducer'
 
 const App = () => {
   const anecdotes = useSelector(state => state)
@@ -14,12 +14,8 @@ const App = () => {
     event.preventDefault()
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
-    dispatch({
-      type: 'NEW_ANECDOTE',
-      payload: {
-        content
-      }
-    })
+    console.log('anecdote', content)
+    dispatch(newAnecdote(content))
   }
 
   return (

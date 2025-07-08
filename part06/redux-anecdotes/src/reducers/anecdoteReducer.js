@@ -50,8 +50,13 @@ export const voteForAnecdote = (id) => {
   }
 }
 
-export const addAnecdote = () => {
-  return 
+export const newAnecdote = (content) => {
+  return {
+    type: 'NEW_ANECDOTE',
+    payload: {
+      content
+    }
+  } 
 }
 
 export default reducer
