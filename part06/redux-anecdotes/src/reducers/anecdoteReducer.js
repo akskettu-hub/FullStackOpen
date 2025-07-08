@@ -35,16 +35,12 @@ const reducer = (state = initialState, action) => {
     }
 
     case 'NEW_ANECDOTE': {
-      
       return [...state, asObject(action.payload.content)]
     }
   
     default:
       return state
   }
-  
-
-  
 }
 
 export const voteForAnecdote = (id) => {
