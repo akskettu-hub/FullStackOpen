@@ -14,7 +14,7 @@ const Notification = ({ notification }) => {
     marginBottom: 10,
   }
 
-  return <div style={style}>{message}</div>
+  return <div style={style} className={isError ? 'error' : 'notification'}>{message}</div>
 }
 
 export default Notification
