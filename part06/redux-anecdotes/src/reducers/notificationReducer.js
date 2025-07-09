@@ -10,16 +10,9 @@ const notificationSlice = createSlice({
             )
         },
         setNotification(state, action) {
-            const anecdoteVotedFor = action.payload.content
-            const notificationType = action.payload.type
-            console.log('notification for: ', notificationType, anecdoteVotedFor)
+            console.log('notification for: ', action.payload)
             
-            if (notificationType === 'VOTE') {
-                return `You voted '${anecdoteVotedFor}'`
-            } else if (notificationType === 'ADD') {
-                return `You added '${anecdoteVotedFor}'`
-            }
-            return anecdoteVotedFor
+            return action.payload
         },
         resetNotification() {
             console.log('resetting notification')
@@ -28,14 +21,13 @@ const notificationSlice = createSlice({
     }
 })
 
-export const notify = (type, content) => {
-    const payload = {type: type, content: content}
+export const notify = (notifyText, notifyTimeSeconds) => {
     return dispatch => {
-        dispatch(setNotification(payload))
+        dispatch(setNotification(notifyText))
 
         setTimeout(() => {
             dispatch(resetNotification())
-        }, 5000 )
+        }, notifyTimeSeconds * 1000 )
     }
 }
 
