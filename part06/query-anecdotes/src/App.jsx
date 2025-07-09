@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
+import { getAnecdotes } from './requests'
 
 const App = () => {
 
@@ -10,8 +10,8 @@ const App = () => {
   }
 
   const result = useQuery({
-    queryKey: ['notes'],
-    queryFn: () => axios.get('http://localhost:3001/anecdotes').then(res => res.data)
+    queryKey: ['anecdotes'],
+    queryFn: getAnecdotes 
   })
   console.log(JSON.parse(JSON.stringify(result)))
 
@@ -22,7 +22,6 @@ const App = () => {
   if ( result.isError ) {
     return <div>{'Anecdote service is not available due to server problems :('}</div>
   }
-
 
   const anecdotes = result.data
 
