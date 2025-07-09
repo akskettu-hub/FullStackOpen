@@ -9,7 +9,7 @@ const Notification = () => {
     marginBottom: 5
   }
   const [notification] = useContext(NotificationContext)
-  console.log(notification)
+  
   if (!notification) return null
 
   return (
