@@ -16,6 +16,8 @@ const AnecdoteList = () => {
         dispatch(notify('VOTE', content))
     }
 
+    console.log(anecdotes)
+
     return (
         <div>
             {[...anecdotes]
