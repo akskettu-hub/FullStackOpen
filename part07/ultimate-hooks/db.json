@@ -1,0 +1,50 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "content": "custom-hooks are awesome!"
+    },
+    {
+      "id": 2,
+      "content": "best feature ever <3"
+    },
+    {
+      "content": "something here",
+      "id": 3
+    },
+    {
+      "content": "something else here",
+      "id": 4
+    },
+    {
+      "content": "something entirely else here",
+      "id": 5
+    },
+    {
+      "content": "Seems like this is working",
+      "id": 6
+    }
+  ],
+  "persons": [
+    {
+      "id": 1,
+      "name": "mluukkai",
+      "number": "040-5483923"
+    },
+    {
+      "id": 2,
+      "name": "hellas",
+      "number": "012-123123"
+    },
+    {
+      "name": "Phillys Phonehavingperson",
+      "number": "098123444",
+      "id": 3
+    },
+    {
+      "name": "Thomas Telephoneman",
+      "number": "234523452",
+      "id": 4
+    }
+  ]
+}
