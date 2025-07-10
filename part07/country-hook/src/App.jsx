@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
+
 const useField = (type) => {
   const [value, setValue] = useState('')
 
@@ -16,9 +17,38 @@ const useField = (type) => {
 }
 
 const useCountry = (name) => {
+  console.log(name)
   const [country, setCountry] = useState(null)
 
-  useEffect(() => {})
+  useEffect(() => {
+    if (!name) {
+      setCountry(null)
+      return
+    }
+    
+    const getCountry = async () => {
+      try {
+        const response = await axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`)
+        setCountry({
+          data: {
+            name: response.data.name.common,
+            capital: response.data.capital[0],
+            population: response.data.population,
+            flag: response.data.flags.png,
+          },
+          found: true
+        })
+        console.log(response)
+      } catch (error) {
+        console.log('No such country: ', error )
+        setCountry({
+          data: {},
+          found: false
+        })
+      }
+    }
+    getCountry()
+  }, [name])
 
   return country
 }
