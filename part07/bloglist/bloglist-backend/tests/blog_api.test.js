@@ -1,340 +1,339 @@
-const { test, after, describe, beforeEach } = require('node:test')
-const assert = require('node:assert')
-const mongoose = require('mongoose')
-const supertest = require('supertest')
-const app = require('../app')
-const Blog = require('../models/blog')
-const User = require('../models/user')
-const testHelper = require('../utils/test_helper')
+const { test, after, describe, beforeEach } = require("node:test");
+const assert = require("node:assert");
+const mongoose = require("mongoose");
+const supertest = require("supertest");
+const app = require("../app");
+const Blog = require("../models/blog");
+const User = require("../models/user");
+const testHelper = require("../utils/test_helper");
 
-const api = supertest(app)
+const api = supertest(app);
 
-describe('api tests', () => {
-    describe('when there are blogs in db initially', () => {
-        beforeEach(async () => {
-            await Blog.deleteMany({})
+describe("api tests", () => {
+  describe("when there are blogs in db initially", () => {
+    beforeEach(async () => {
+      await Blog.deleteMany({});
 
-            const blogObjects = testHelper.initalBlogs
-                .map(blog => new Blog(blog))
+      const blogObjects = testHelper.initalBlogs.map((blog) => new Blog(blog));
 
-            const promiseArray = blogObjects.map(blog => blog.save())
-            await Promise.all(promiseArray)
-        })
+      const promiseArray = blogObjects.map((blog) => blog.save());
+      await Promise.all(promiseArray);
+    });
 
-        test('blogs are returned as json', async () => {
-            await api
-                .get('/api/blogs')
-                .expect(200)
-                .expect('Content-Type', /application\/json/)
-            })
+    test("blogs are returned as json", async () => {
+      await api
+        .get("/api/blogs")
+        .expect(200)
+        .expect("Content-Type", /application\/json/);
+    });
 
-        test('all blog are returned', async () => {
-            const response = await api.get('/api/blogs')
-            assert.strictEqual(response.body.length, testHelper.initalBlogs.length)
-        })
+    test("all blog are returned", async () => {
+      const response = await api.get("/api/blogs");
+      assert.strictEqual(response.body.length, testHelper.initalBlogs.length);
+    });
 
-        test('all blogs contain unique id property called id', async () => {
-            const response = await api.get('/api/blogs')
-            assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id")), true)
-            })
+    test("all blogs contain unique id property called id", async () => {
+      const response = await api.get("/api/blogs");
+      assert.strictEqual(
+        response.body.every((blog) => Object.hasOwn(blog, "id")),
+        true,
+      );
+    });
 
-        test('A specific blog can be found with id', async () => {
-            const blogs = await api.get('/api/blogs')
-            const blogToView = blogs.body[0]
-            const id = blogToView.id
-        
-            const response = await api.get(`/api/blogs/${id}`)
-            
-            assert.deepStrictEqual(response.body, blogToView)
-        })
-    })    
+    test("A specific blog can be found with id", async () => {
+      const blogs = await api.get("/api/blogs");
+      const blogToView = blogs.body[0];
+      const id = blogToView.id;
 
-    describe('Adding a new blog', () => {
-        beforeEach(async () => {
-            await Blog.deleteMany({})
-            await User.deleteMany({})
-            await User.ensureIndexes() // This makes sure inecies are included. needed to make username uniqueness check work
-            const rootUser = await testHelper.initialiseRootUser()
-            await rootUser.save() 
-        })
+      const response = await api.get(`/api/blogs/${id}`);
 
-        test('succeeds with status code 201 with valid data and token', async () => {
-            const token = await testHelper.getRootAuth(api)
+      assert.deepStrictEqual(response.body, blogToView);
+    });
+  });
 
-            const firstResponse = await api.get('/api/blogs')
-            const initialBlogsLength = firstResponse.body.length
-            const blogObject = testHelper.oneBlog
+  describe("Adding a new blog", () => {
+    beforeEach(async () => {
+      await Blog.deleteMany({});
+      await User.deleteMany({});
+      await User.ensureIndexes(); // This makes sure inecies are included. needed to make username uniqueness check work
+      const rootUser = await testHelper.initialiseRootUser();
+      await rootUser.save();
+    });
 
-            await api
-                .post('/api/blogs')
-                .set('Authorization', `Bearer ${token}`)
-                .send(blogObject)
-                .expect(201)
-                .expect('Content-Type', /application\/json/)
+    test("succeeds with status code 201 with valid data and token", async () => {
+      const token = await testHelper.getRootAuth(api);
 
-            const secondResponse = await api.get('/api/blogs')
-        
-            assert.strictEqual(secondResponse.body.length, initialBlogsLength + 1)
-        })
+      const firstResponse = await api.get("/api/blogs");
+      const initialBlogsLength = firstResponse.body.length;
+      const blogObject = testHelper.oneBlog;
 
-        test('If likes property is missing from post request, defaults to 0', async () => {
-            const token = await testHelper.getRootAuth(api)
-            
-            const response = await api
-                .post('/api/blogs')
-                .set('Authorization', `Bearer ${token}`)
-                .send(testHelper.missingLikesBlog)
-                .expect(201)
-                .expect('Content-Type', /application\/json/)
+      await api
+        .post("/api/blogs")
+        .set("Authorization", `Bearer ${token}`)
+        .send(blogObject)
+        .expect(201)
+        .expect("Content-Type", /application\/json/);
 
-            assert.strictEqual(response.body.likes, 0)
-        })
+      const secondResponse = await api.get("/api/blogs");
 
-        test('Missing title property returns 400', async () => {
-            const token = await testHelper.getRootAuth(api)
+      assert.strictEqual(secondResponse.body.length, initialBlogsLength + 1);
+    });
 
-            await api
-                .post('/api/blogs')
-                .set('Authorization', `Bearer ${token}`)
-                .send(testHelper.missingTitleBlog)
-                .expect(400)
-                .expect('Content-Type', /application\/json/)
-        })
+    test("If likes property is missing from post request, defaults to 0", async () => {
+      const token = await testHelper.getRootAuth(api);
 
-        test('Missing URL property returns 400', async () => {
-            const token = await testHelper.getRootAuth(api)
+      const response = await api
+        .post("/api/blogs")
+        .set("Authorization", `Bearer ${token}`)
+        .send(testHelper.missingLikesBlog)
+        .expect(201)
+        .expect("Content-Type", /application\/json/);
 
-            await api
-                .post('/api/blogs')
-                .set('Authorization', `Bearer ${token}`)
-                .send(testHelper.missingUrlBlog)
-                .expect(400)
-                .expect('Content-Type', /application\/json/)
-        })
+      assert.strictEqual(response.body.likes, 0);
+    });
 
-        test('fails when token is missing with status code 401', async () => {
-            await api
-                .post('/api/blogs')
-                .send(testHelper.oneBlog)
-                .expect(401)
-                .expect('Content-Type', /application\/json/)
-        })
-    })
+    test("Missing title property returns 400", async () => {
+      const token = await testHelper.getRootAuth(api);
 
-    describe('Deleting a blog', () => {
-        beforeEach(async () => {
-            await Blog.deleteMany({})
-            await User.deleteMany({})
-            await User.ensureIndexes() // This makes sure inecies are included. needed to make username uniqueness check work
-            const rootUser = await testHelper.initialiseRootUser()
-            await rootUser.save()
+      await api
+        .post("/api/blogs")
+        .set("Authorization", `Bearer ${token}`)
+        .send(testHelper.missingTitleBlog)
+        .expect(400)
+        .expect("Content-Type", /application\/json/);
+    });
 
-            const user = await User.findOne( rootUser )
+    test("Missing URL property returns 400", async () => {
+      const token = await testHelper.getRootAuth(api);
 
-            const blogObjects = testHelper.blogsWithUser(user.id)
+      await api
+        .post("/api/blogs")
+        .set("Authorization", `Bearer ${token}`)
+        .send(testHelper.missingUrlBlog)
+        .expect(400)
+        .expect("Content-Type", /application\/json/);
+    });
 
-            const promiseArray = blogObjects.map(blog => blog.save())
-            await Promise.all(promiseArray)            
-        })
+    test("fails when token is missing with status code 401", async () => {
+      await api
+        .post("/api/blogs")
+        .send(testHelper.oneBlog)
+        .expect(401)
+        .expect("Content-Type", /application\/json/);
+    });
+  });
 
-        test('succesfully removes an existing post with status code 204 when token is valid', async ()=> {
-            const blogsAtStart = await api.get('/api/blogs')
-            
-            const blogId = blogsAtStart.body[0].id
-            
-            const token = await testHelper.getRootAuth(api)
-            
-            await api
-                .delete(`/api/blogs/${blogId}`)
-                .set('Authorization', `Bearer ${token}`)
-                .expect(204)
-            
-            const blogsAtEnd = await api.get('/api/blogs')
-            const idsAtEnd = blogsAtEnd.body.map(blog => blog.id)
-            
-            assert(!idsAtEnd.includes(blogId))
-            assert.strictEqual(blogsAtStart.body.length - 1, blogsAtEnd.body.length)
-        })
+  describe("Deleting a blog", () => {
+    beforeEach(async () => {
+      await Blog.deleteMany({});
+      await User.deleteMany({});
+      await User.ensureIndexes(); // This makes sure inecies are included. needed to make username uniqueness check work
+      const rootUser = await testHelper.initialiseRootUser();
+      await rootUser.save();
 
-        test('fails with status code 401 when token is missing', async ()=> {
-            const blogsAtStart = await api.get('/api/blogs')
-            
-            const blogId = blogsAtStart.body[0].id
-                        
-            await api
-                .delete(`/api/blogs/${blogId}`)
-                .expect(401)
-            
-            const blogsAtEnd = await api.get('/api/blogs')
-            const idsAtEnd = blogsAtEnd.body.map(blog => blog.id)
-            
-            assert(idsAtEnd.includes(blogId))
-            assert.strictEqual(blogsAtStart.body.length , blogsAtEnd.body.length)
-        })
+      const user = await User.findOne(rootUser);
 
-        test('Deleting a blog with an invalid blog id fails with status code 400', async () => {
-            const token = await testHelper.getRootAuth(api)
-            
-            await api
-                .delete('/api/blogs/abcd1234')
-                .set('Authorization', `Bearer ${token}`)
-                .expect(400)
-        })
+      const blogObjects = testHelper.blogsWithUser(user.id);
 
-        test('Deleting a blog with a non-existent valid id fails with status code 404', async () => {
-            await api
-                .delete(`/api/blogs/${testHelper.nonExistingId}`)
-                .expect(404)
-        })
-    })
+      const promiseArray = blogObjects.map((blog) => blog.save());
+      await Promise.all(promiseArray);
+    });
 
-    describe('Updating a blog', () => {
-        beforeEach(async () => {
-            await Blog.deleteMany({})
-            await User.deleteMany({})
-            await User.ensureIndexes() // This makes sure inecies are included. needed to make username uniqueness check work
-            const rootUser = await testHelper.initialiseRootUser()
-            await rootUser.save()
+    test("succesfully removes an existing post with status code 204 when token is valid", async () => {
+      const blogsAtStart = await api.get("/api/blogs");
 
-            const user = await User.findOne( rootUser )
+      const blogId = blogsAtStart.body[0].id;
 
-            const blogObjects = testHelper.blogsWithUser(user.id)
+      const token = await testHelper.getRootAuth(api);
 
-            const promiseArray = blogObjects.map(blog => blog.save())
-            await Promise.all(promiseArray)            
-        })
-        test('Updating a blog succeeds with status code 200 with valid data', async () => {
-            const blogsAtStart = await api.get('/api/blogs')
-            const blogToUpdate = blogsAtStart.body[0]
+      await api
+        .delete(`/api/blogs/${blogId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .expect(204);
 
-            blogToUpdate.likes = 999
+      const blogsAtEnd = await api.get("/api/blogs");
+      const idsAtEnd = blogsAtEnd.body.map((blog) => blog.id);
 
-            await api
-                .put(`/api/blogs/${blogToUpdate.id}`)
-                .send(blogToUpdate)
-                .expect(200)
+      assert(!idsAtEnd.includes(blogId));
+      assert.strictEqual(blogsAtStart.body.length - 1, blogsAtEnd.body.length);
+    });
 
-            const responseUpdateBlog = await api.get('/api/blogs')
-            const updatedBlog = responseUpdateBlog.body[0]
+    test("fails with status code 401 when token is missing", async () => {
+      const blogsAtStart = await api.get("/api/blogs");
 
-            assert.deepStrictEqual(blogToUpdate, updatedBlog)
-        })
+      const blogId = blogsAtStart.body[0].id;
 
-        test('Updating a blog fails with status code 400 with invalid data', async () => {
-            const blogsAtStart = await api.get('/api/blogs')
-            const blogToUpdate = blogsAtStart.body[0]
+      await api.delete(`/api/blogs/${blogId}`).expect(401);
 
-            blogToUpdate.likes = 'invalid data'
+      const blogsAtEnd = await api.get("/api/blogs");
+      const idsAtEnd = blogsAtEnd.body.map((blog) => blog.id);
 
-            await api
-                .put(`/api/blogs/${blogToUpdate.id}`)
-                .send(blogToUpdate)
-                .expect(400)
-        })
+      assert(idsAtEnd.includes(blogId));
+      assert.strictEqual(blogsAtStart.body.length, blogsAtEnd.body.length);
+    });
 
-        test('Updating a blog fails with status code 404 with invalid id', async () => {
-            const blogsAtStart = await api.get('/api/blogs')
-            const blogToUpdate = blogsAtStart.body[0]
+    test("Deleting a blog with an invalid blog id fails with status code 400", async () => {
+      const token = await testHelper.getRootAuth(api);
 
-            blogToUpdate.likes = 999
+      await api
+        .delete("/api/blogs/abcd1234")
+        .set("Authorization", `Bearer ${token}`)
+        .expect(400);
+    });
 
-            await api
-                .put(`/api/blogs/${testHelper.nonExistingId}`)
-                .send(blogToUpdate)
-                .expect(404)
-        })
-    })
+    test("Deleting a blog with a non-existent valid id fails with status code 404", async () => {
+      await api.delete(`/api/blogs/${testHelper.nonExistingId}`).expect(404);
+    });
+  });
 
-    describe('when there are two users in database initially', () => {
-        beforeEach(async () => {
-            await User.deleteMany({})
-            await User.ensureIndexes() // This makes sure inecies are included. needed to make username uniqueness check work
-            await User.insertMany(testHelper.initialUsers)
-        })
+  describe("Updating a blog", () => {
+    beforeEach(async () => {
+      await Blog.deleteMany({});
+      await User.deleteMany({});
+      await User.ensureIndexes(); // This makes sure inecies are included. needed to make username uniqueness check work
+      const rootUser = await testHelper.initialiseRootUser();
+      await rootUser.save();
 
-        test('all users are returned with status code 200', async () => {
-            const response = await api
-                .get('/api/users')
-                .expect(200)
-            
-            assert.strictEqual(response.body.length, testHelper.initialUsers.length)
-        })
+      const user = await User.findOne(rootUser);
 
-        test('POST request with valid data succeed with status code 201', async () => {
-            const usersAtStart = await testHelper.usersInDb() 
-            
-            const newUser = {
-                username: "testy",
-                name: "testy testerson",
-                password: "passoword123",
-            }
-            
-            const response = await api
-                .post('/api/users')
-                .send(newUser)
-                .expect(201)
-                .expect('Content-Type', /application\/json/)
+      const blogObjects = testHelper.blogsWithUser(user.id);
 
-            const usersAtEnd = await testHelper.usersInDb()
-            assert.strictEqual(usersAtStart.length + 1, usersAtEnd.length)
-        })
+      const promiseArray = blogObjects.map((blog) => blog.save());
+      await Promise.all(promiseArray);
+    });
+    test("Updating a blog succeeds with status code 200 with valid data", async () => {
+      const blogsAtStart = await api.get("/api/blogs");
+      const blogToUpdate = blogsAtStart.body[0];
 
-        test('Invalid username fails with status code 400, with proper error message', async () => {
-            const usersAtStart = await testHelper.usersInDb() 
-            
-            const newUser = {
-                username: "abc",
-                name: "abc",
-                password: "passoword123",
-            }
+      blogToUpdate.likes = 999;
 
-            const response = await api
-                .post('/api/users')
-                .send(newUser)
-                .expect(400)
+      await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(blogToUpdate)
+        .expect(200);
 
-            assert.strictEqual(response.body.error, 'username must be at least 3 characters long')
+      const responseUpdateBlog = await api.get("/api/blogs");
+      const updatedBlog = responseUpdateBlog.body[0];
 
-            const usersAtEnd = await testHelper.usersInDb()
-            assert.strictEqual(usersAtStart.length, usersAtEnd.length)
-        })
+      assert.deepStrictEqual(blogToUpdate, updatedBlog);
+    });
 
-        test('Invalid password fails with status code 400, with proper error message', async () => {
-            const usersAtStart = await testHelper.usersInDb() 
-            
-            const newUser = {
-                username: "abcd",
-                name: "abc",
-                password: "123",
-            }
+    test("Updating a blog fails with status code 400 with invalid data", async () => {
+      const blogsAtStart = await api.get("/api/blogs");
+      const blogToUpdate = blogsAtStart.body[0];
 
-            const response = await api
-                .post('/api/users')
-                .send(newUser)
-                .expect(400)
+      blogToUpdate.likes = "invalid data";
 
-            assert.strictEqual(response.body.error, 'password must be at least 3 characters long')
+      await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(blogToUpdate)
+        .expect(400);
+    });
 
-            const usersAtEnd = await testHelper.usersInDb()
-            assert.strictEqual(usersAtStart.length, usersAtEnd.length)
-        })
+    test("Updating a blog fails with status code 404 with invalid id", async () => {
+      const blogsAtStart = await api.get("/api/blogs");
+      const blogToUpdate = blogsAtStart.body[0];
 
-        test('creation fails with username already in db, with status code 400 and proper error message', async () => {
-            const usersAtStart = await testHelper.usersInDb()      
+      blogToUpdate.likes = 999;
 
-            const response = await api
-                .post('/api/users')
-                .send(testHelper.initialUsers[0])
-                .expect(400)
+      await api
+        .put(`/api/blogs/${testHelper.nonExistingId}`)
+        .send(blogToUpdate)
+        .expect(404);
+    });
+  });
 
-            assert.strictEqual(response.body.error, 'expected `username` to be unique')
+  describe("when there are two users in database initially", () => {
+    beforeEach(async () => {
+      await User.deleteMany({});
+      await User.ensureIndexes(); // This makes sure inecies are included. needed to make username uniqueness check work
+      await User.insertMany(testHelper.initialUsers);
+    });
 
-            const usersAtEnd = await testHelper.usersInDb()
-            assert.strictEqual(usersAtStart.length, usersAtEnd.length)
-        })
-    })
-})
+    test("all users are returned with status code 200", async () => {
+      const response = await api.get("/api/users").expect(200);
+
+      assert.strictEqual(response.body.length, testHelper.initialUsers.length);
+    });
+
+    test("POST request with valid data succeed with status code 201", async () => {
+      const usersAtStart = await testHelper.usersInDb();
+
+      const newUser = {
+        username: "testy",
+        name: "testy testerson",
+        password: "passoword123",
+      };
+
+      const response = await api
+        .post("/api/users")
+        .send(newUser)
+        .expect(201)
+        .expect("Content-Type", /application\/json/);
+
+      const usersAtEnd = await testHelper.usersInDb();
+      assert.strictEqual(usersAtStart.length + 1, usersAtEnd.length);
+    });
+
+    test("Invalid username fails with status code 400, with proper error message", async () => {
+      const usersAtStart = await testHelper.usersInDb();
+
+      const newUser = {
+        username: "abc",
+        name: "abc",
+        password: "passoword123",
+      };
+
+      const response = await api.post("/api/users").send(newUser).expect(400);
+
+      assert.strictEqual(
+        response.body.error,
+        "username must be at least 3 characters long",
+      );
+
+      const usersAtEnd = await testHelper.usersInDb();
+      assert.strictEqual(usersAtStart.length, usersAtEnd.length);
+    });
+
+    test("Invalid password fails with status code 400, with proper error message", async () => {
+      const usersAtStart = await testHelper.usersInDb();
+
+      const newUser = {
+        username: "abcd",
+        name: "abc",
+        password: "123",
+      };
+
+      const response = await api.post("/api/users").send(newUser).expect(400);
+
+      assert.strictEqual(
+        response.body.error,
+        "password must be at least 3 characters long",
+      );
+
+      const usersAtEnd = await testHelper.usersInDb();
+      assert.strictEqual(usersAtStart.length, usersAtEnd.length);
+    });
+
+    test("creation fails with username already in db, with status code 400 and proper error message", async () => {
+      const usersAtStart = await testHelper.usersInDb();
+
+      const response = await api
+        .post("/api/users")
+        .send(testHelper.initialUsers[0])
+        .expect(400);
+
+      assert.strictEqual(
+        response.body.error,
+        "expected `username` to be unique",
+      );
+
+      const usersAtEnd = await testHelper.usersInDb();
+      assert.strictEqual(usersAtStart.length, usersAtEnd.length);
+    });
+  });
+});
 
 after(async () => {
-    await mongoose.connection.close()
-})
+  await mongoose.connection.close();
+});
