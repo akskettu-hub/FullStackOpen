@@ -4,18 +4,12 @@ import LoginForm from "./components/LoginForm";
 import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
 import blogService from "./services/blogs";
-import loginService from "./services/login";
-import { notify } from "./reducers/notificationReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
 import BlogList from "./components/BlogList";
+import { userLogin, userLogout } from "./reducers/userReducer";
 
 const App = () => {
-  const [loginVisible, setLoginVisible] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -26,66 +20,24 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch(userLogin(user));
       blogService.setToken(user.token);
     }
   }, []);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-
-      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      setUsername("");
-      setPassword("");
-    } catch (exception) {
-      dispatch(notify("Wrong credentials", true));
-    }
-  };
-
-  const loginForm = () => {
-    const hideWhenVisible = { display: loginVisible ? "none" : "" };
-    const showWhenVisible = { display: loginVisible ? "" : "none" };
-
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setLoginVisible(true)}>log in</button>
-        </div>
-        <div style={showWhenVisible}>
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
-          />
-          <button onClick={() => setLoginVisible(false)}>cancel</button>
-        </div>
-      </div>
-    );
-  };
-
   const logoutHandler = () => {
-    setUser(null);
+    dispatch(userLogout());
     window.localStorage.removeItem("loggedBlogAppUser");
   };
+
+  const user = useSelector((state) => state.user);
 
   if (user === null) {
     return (
       <div>
         <h1>Blogs App</h1>
-
         <Notification />
-
-        {loginForm()}
+        <LoginForm />
       </div>
     );
   }
