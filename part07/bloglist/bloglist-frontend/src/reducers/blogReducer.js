@@ -9,6 +9,10 @@ const blogSlice = createSlice({
     addBlog(state, action) {
       state.push(action.payload);
     },
+    dropBlog(state, action) {
+      const id = action.payload;
+      return state.filter((b) => b.id !== id);
+    },
     addVote(state, action) {
       const id = action.payload;
       const blogToUpvote = state.find((b) => b.id === id);
@@ -27,7 +31,8 @@ const blogSlice = createSlice({
   },
 });
 
-export const { addBlog, addVote, appendBlog, setBlogs } = blogSlice.actions;
+export const { addBlog, addVote, appendBlog, setBlogs, dropBlog } =
+  blogSlice.actions;
 
 export const initializeBlogs = () => {
   return async (dispatch) => {
@@ -51,6 +56,31 @@ export const createBlog = (content) => {
       );
     } catch (error) {
       dispatch(notify("blog creation failed", true));
+    }
+  };
+};
+
+export const voteForBlog = (content) => {
+  return async (dispatch) => {
+    const newBlog = await blogService.updateLikes(
+      content.updatedBlog,
+      content.blogId,
+    );
+    dispatch(addVote(newBlog.id));
+    dispatch(notify(`You voted ${newBlog.title}`, false, 3));
+  };
+};
+
+export const removeBlog = (blogId) => {
+  return async (dispatch) => {
+    try {
+      await blogService.deleteBlog(blogId);
+
+      dispatch(dropBlog(blogId));
+      dispatch(notify(`Removed blog`, false));
+      console.log(`Removed blog with id ${blogId}`);
+    } catch (error) {
+      dispatch(notify(`Failed to remove blog`, true));
     }
   };
 };

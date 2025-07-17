@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import Togglable from "./components/Togglable";
@@ -77,45 +76,6 @@ const App = () => {
   const logoutHandler = () => {
     setUser(null);
     window.localStorage.removeItem("loggedBlogAppUser");
-  };
-
-  const updateLike = async (updateData) => {
-    try {
-      const updatedBlog = await blogService.updateLikes(
-        updateData.updatedBlog,
-        updateData.blogId,
-      );
-      console.log("likes updated:", updatedBlog.id);
-
-      dispatch(
-        notify(
-          `Likes for ${updatedBlog.title} by ${updatedBlog.author} updated`,
-          false,
-          3,
-        ),
-      );
-
-      setBlogs(
-        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog)),
-      );
-    } catch (exception) {
-      dispatch(notify("Updating likes failed", true));
-    }
-  };
-
-  const removeBlog = async (blogId) => {
-    console.log(`removing blog: ${blogId}`);
-
-    try {
-      const removedBlog = await blogService.deleteBlog(blogId);
-      console.log(`removed blog ${blogId}`);
-
-      const updatedBlogs = blogs.filter((b) => b.id !== blogId);
-      setBlogs(updatedBlogs);
-      dispatch(notify("Removed blog successfully", false, 5));
-    } catch (exception) {
-      dispatch(notify("Removing blog failed", true, 5));
-    }
   };
 
   if (user === null) {

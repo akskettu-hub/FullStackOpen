@@ -1,8 +1,11 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { removeBlog, voteForBlog } from "../reducers/blogReducer";
 
-const Blog = ({ blog, updateLike, userId, removeBlog }) => {
+const Blog = ({ blog, userId }) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
+  const dispatch = useDispatch();
 
   const blogStyle = {
     paddingTop: 10,
@@ -18,16 +21,18 @@ const Blog = ({ blog, updateLike, userId, removeBlog }) => {
   const handleLikeClick = () => {
     console.log("Updating blog:", blog.id);
 
-    updateLike({
-      updatedBlog: {
-        user: blog.user.id,
-        likes: blog.likes + 1,
-        title: blog.title,
-        author: blog.author,
-        url: blog.url,
-      },
-      blogId: blog.id,
-    });
+    dispatch(
+      voteForBlog({
+        updatedBlog: {
+          user: blog.user.id,
+          likes: blog.likes + 1,
+          title: blog.title,
+          author: blog.author,
+          url: blog.url,
+        },
+        blogId: blog.id,
+      }),
+    );
   };
 
   const userIsBlogCreator = blog.user.id === userId;
@@ -39,7 +44,7 @@ const Blog = ({ blog, updateLike, userId, removeBlog }) => {
     window.confirm(
       `Are you sure you want to remove ${blog.title} by ${blog.author}`,
     )
-      ? removeBlog(blog.id)
+      ? dispatch(removeBlog(blog.id))
       : console.log("clicked cancel remove");
   };
 
@@ -73,8 +78,6 @@ const Blog = ({ blog, updateLike, userId, removeBlog }) => {
 };
 
 Blog.propTypes = {
-  updateLike: PropTypes.func.isRequired,
-  removeBlog: PropTypes.func.isRequired,
   userId: PropTypes.string.isRequired,
   blog: PropTypes.object.isRequired,
 };
