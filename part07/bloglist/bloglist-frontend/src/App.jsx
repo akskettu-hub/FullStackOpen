@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import Togglable from "./components/Togglable";

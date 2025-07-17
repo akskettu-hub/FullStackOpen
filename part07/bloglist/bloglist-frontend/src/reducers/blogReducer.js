@@ -22,17 +22,13 @@ const blogSlice = createSlice({
       };
       return state.map((a) => (a.id !== id ? a : upvotedBlog));
     },
-    appendBlog(state, action) {
-      state.push(action.payload);
-    },
     setBlogs(state, action) {
       return action.payload;
     },
   },
 });
 
-export const { addBlog, addVote, appendBlog, setBlogs, dropBlog } =
-  blogSlice.actions;
+export const { addBlog, addVote, setBlogs, dropBlog } = blogSlice.actions;
 
 export const initializeBlogs = () => {
   return async (dispatch) => {
