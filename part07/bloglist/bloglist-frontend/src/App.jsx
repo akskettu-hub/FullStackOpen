@@ -6,6 +6,8 @@ import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import { notify } from "./reducers/notificationReducer";
+import { useDispatch } from "react-redux";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -15,7 +17,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
-  const [notification, setNotification] = useState({ message: null });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -33,8 +35,6 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
 
-    console.log("got to handleLogin", username, password);
-
     try {
       const user = await loginService.login({
         username,
@@ -47,7 +47,7 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      notifyWith("Wrong credentials", true);
+      dispatch(notify("Wrong credentials", true));
     }
   };
 
@@ -55,18 +55,13 @@ const App = () => {
     try {
       const blog = await blogService.create(newBlog);
       console.log("blog created:", blog);
-      notifyWith(`a new blog ${blog.title} by ${blog.author} added`);
+      dispatch(
+        notify(`a new blog ${blog.title} by ${blog.author} added`, false),
+      );
       setBlogs(blogs.concat(blog));
     } catch (exception) {
-      notifyWith("creation failed", true);
+      dispatch(notify("Blog creation failed", true));
     }
-  };
-
-  const notifyWith = (message, isError = false) => {
-    setNotification({ message, isError });
-    setTimeout(() => {
-      setNotification({ message: null });
-    }, 5000);
   };
 
   const loginForm = () => {
@@ -104,15 +99,20 @@ const App = () => {
         updateData.blogId,
       );
       console.log("likes updated:", updatedBlog.id);
-      notifyWith(
-        `Likes for ${updatedBlog.title} by ${updatedBlog.author} updated`,
+
+      dispatch(
+        notify(
+          `Likes for ${updatedBlog.title} by ${updatedBlog.author} updated`,
+          false,
+          3,
+        ),
       );
 
       setBlogs(
         blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog)),
       );
     } catch (exception) {
-      notifyWith("creation failed", true);
+      dispatch(notify("Updating likes failed", true));
     }
   };
 
@@ -125,10 +125,9 @@ const App = () => {
 
       const updatedBlogs = blogs.filter((b) => b.id !== blogId);
       setBlogs(updatedBlogs);
-
-      notifyWith("Removed blog successfully", false);
+      dispatch(notify("Removed blog successfully", false, 5));
     } catch (exception) {
-      notifyWith("Removing blog failed", true);
+      dispatch(notify("Removing blog failed", true, 5));
     }
   };
 
@@ -137,7 +136,7 @@ const App = () => {
       <div>
         <h1>Blogs App</h1>
 
-        <Notification notification={notification} />
+        <Notification />
 
         {loginForm()}
       </div>
@@ -148,7 +147,7 @@ const App = () => {
     <div>
       <h2>Blogs App</h2>
 
-      <Notification notification={notification} />
+      <Notification />
 
       <p>
         {`${user.name} logged in`}
