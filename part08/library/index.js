@@ -3,6 +3,7 @@ const { startStandaloneServer } = require("@apollo/server/standalone");
 const Author = require("./models/author");
 const Book = require("./models/book");
 const { default: mongoose } = require("mongoose");
+const { GraphQLError } = require("graphql");
 
 require("dotenv").config();
 
@@ -89,24 +90,55 @@ const resolvers = {
 
       if (!author) {
         author = new Author({ name: args.author });
-        await author.save();
+        try {
+          await author.save();
+        } catch (error) {
+          throw new GraphQLError("Adding new author failed", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.name,
+              error,
+            },
+          });
+        }
       }
 
       const book = new Book({ ...args, author: author });
-      await book.save();
+      try {
+        await book.save();
+      } catch (error) {
+        throw new GraphQLError("Adding new book failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.name,
+            error,
+          },
+        });
+      }
 
       return Book.findById(book._id).populate("author");
     },
 
     editAuthor: async (root, args) => {
       const authorToEdit = await Author.findOne({ name: args.name });
+
       if (!authorToEdit) {
         return null;
       }
 
       authorToEdit.born = args.setBornTo;
-      await authorToEdit.save();
 
+      try {
+        await authorToEdit.save();
+      } catch (error) {
+        throw new GraphQLError("Editing birthyear failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.name,
+            error,
+          },
+        });
+      }
       return authorToEdit;
     },
   },
