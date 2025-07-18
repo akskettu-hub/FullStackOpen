@@ -48,6 +48,7 @@ const LoginForm = (props) => {
         <div>
           password
           <input
+            type="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
