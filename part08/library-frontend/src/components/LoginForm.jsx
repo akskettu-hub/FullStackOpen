@@ -26,7 +26,7 @@ const LoginForm = (props) => {
 
   const submit = (event) => {
     event.preventDefault();
-    console.log("hit submit", username, password);
+    console.log("login submit", username);
 
     login({ variables: { username, password } });
 
