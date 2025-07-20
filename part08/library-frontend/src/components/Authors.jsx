@@ -5,6 +5,7 @@ import AuthorBirthyearForm from "./AuthorBirthyearForm";
 const Authors = (props) => {
   const result = useQuery(ALL_AUTHORS, {
     skip: !props.show,
+    fetchPolicy: "cache-first",
   });
 
   if (!props.show) {

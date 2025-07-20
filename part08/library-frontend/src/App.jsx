@@ -28,7 +28,14 @@ const App = () => {
       setToken(token);
     }
 
-    prefetchData(client); //Prefetches books and authors when App is first run.
+    /*
+    prefetches data from server when app is started. 
+    This is a hack to ensure that books and authors are available when addBooks is run
+    This is caused by the structure of the app where the appropriate page renders the relevant content,
+    but if a page is not navigated to, that data won't be available.
+    As a side effect, this causes authors to be fetched twice when the app is run.
+    */
+    prefetchData(client);
   }, []);
 
   const logout = () => {
