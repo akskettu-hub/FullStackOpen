@@ -15,7 +15,7 @@ const NewBook = (props) => {
       console.log(error.graphQLErrors[0]?.message);
     },
     update: (cache, response) => {
-      updateCache(cache, { query: ALL_BOOKS }, response.data.addPerson);
+      updateCache(cache, { query: ALL_BOOKS }, response.data.addBook);
     },
   });
 
