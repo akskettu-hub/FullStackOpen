@@ -36,6 +36,7 @@ const resolvers = {
       return await Book.countDocuments({ author: author._id });
     },
   },
+
   Mutation: {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser;
@@ -65,7 +66,10 @@ const resolvers = {
         }
       }
 
+      console.log(author);
+
       const book = new Book({ ...args, author: author });
+
       try {
         await book.save();
       } catch (error) {
@@ -77,6 +81,8 @@ const resolvers = {
           },
         });
       }
+
+      console.log(book);
 
       pubsub.publish("BOOK_ADDED", { bookAdded: book });
 

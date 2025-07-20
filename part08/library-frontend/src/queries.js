@@ -5,6 +5,7 @@ const BOOK_DETAILS = gql`
     id
     title
     author {
+      id
       name
     }
     published
@@ -15,6 +16,7 @@ const BOOK_DETAILS = gql`
 export const ALL_AUTHORS = gql`
   query {
     allAuthors {
+      id
       name
       born
       bookCount
@@ -25,8 +27,10 @@ export const ALL_AUTHORS = gql`
 export const ALL_BOOKS = gql`
   query {
     allBooks {
+      id
       title
       author {
+        id
         name
       }
       published
@@ -57,10 +61,14 @@ export const CREATE_BOOK = gql`
       published: $published
       genres: $genres
     ) {
+      id
       title
       author {
+        id
         name
       }
+      published
+      genres
     }
   }
 `;
@@ -85,8 +93,10 @@ export const LOGIN = gql`
 export const BOOK_ADDED = gql`
   subscription {
     bookAdded {
+      id
       title
       author {
+        id
         name
         born
         bookCount

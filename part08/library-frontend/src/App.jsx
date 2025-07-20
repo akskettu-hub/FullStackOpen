@@ -1,24 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
 import { useApolloClient, useSubscription } from "@apollo/client";
 import Recommendations from "./components/Recommendations";
-import { ALL_BOOKS, BOOK_ADDED } from "./queries";
+import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED } from "./queries";
 
 export const updateCache = (cache, query, addedBook) => {
-  const uniqByName = (a) => {
+  // returns array of unique objects in array. Removes duplicates array
+  const uniqById = (a) => {
+    //a = array
     let seen = new Set();
     return a.filter((item) => {
-      let k = item.title;
-      return seen.has(k) ? false : seen.add(k);
+      // returns filterd array
+      let k = item.title; // k = title of each item
+      return seen.has(k) ? false : seen.add(k); // if title has already been seen, return false else add title to seen
     });
   };
 
   cache.updateQuery(query, ({ allBooks }) => {
     return {
-      allBooks: uniqByName(allBooks.concat(addedBook)),
+      allBooks: uniqById(allBooks.concat(addedBook)),
     };
   });
 };
@@ -39,6 +42,31 @@ const App = () => {
       window.alert(`New book ${addedBook.title} has been added!`);
     },
   });
+
+  useEffect(() => {
+    const token = window.localStorage.getItem("library-user-token");
+    if (token) {
+      setToken(token);
+    }
+
+    prefetchData();
+  }, []);
+
+  const prefetchData = async () => {
+    try {
+      await client.query({
+        query: ALL_BOOKS,
+        fetchPolicy: "network-only",
+      });
+
+      await client.query({
+        query: ALL_AUTHORS,
+        fetchPolicy: "network-only",
+      });
+    } catch (error) {
+      console.error("Prefetch failed:", error);
+    }
+  };
 
   const logout = () => {
     setToken(null);
