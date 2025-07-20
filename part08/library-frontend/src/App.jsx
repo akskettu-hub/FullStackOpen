@@ -5,26 +5,8 @@ import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
 import { useApolloClient, useSubscription } from "@apollo/client";
 import Recommendations from "./components/Recommendations";
-import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED } from "./queries";
-
-export const updateCache = (cache, query, addedBook) => {
-  // returns array of unique objects in array. Removes duplicates array
-  const uniqById = (a) => {
-    //a = array
-    let seen = new Set();
-    return a.filter((item) => {
-      // returns filterd array
-      let k = item.title; // k = title of each item
-      return seen.has(k) ? false : seen.add(k); // if title has already been seen, return false else add title to seen
-    });
-  };
-
-  cache.updateQuery(query, ({ allBooks }) => {
-    return {
-      allBooks: uniqById(allBooks.concat(addedBook)),
-    };
-  });
-};
+import { ALL_BOOKS, BOOK_ADDED } from "./queries";
+import { prefetchData, updateCache } from "./cacheManagement";
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -34,11 +16,8 @@ const App = () => {
   useSubscription(BOOK_ADDED, {
     onData: ({ data, client }) => {
       const addedBook = data.data.bookAdded;
-
       console.log("New book through subscription: ", data);
-
       updateCache(client.cache, { query: ALL_BOOKS }, addedBook);
-
       window.alert(`New book ${addedBook.title} has been added!`);
     },
   });
@@ -49,27 +28,13 @@ const App = () => {
       setToken(token);
     }
 
-    prefetchData();
+    prefetchData(client); //Prefetches books and authors when App is first run.
   }, []);
 
-  const prefetchData = async () => {
-    try {
-      await client.query({
-        query: ALL_BOOKS,
-        fetchPolicy: "network-only",
-      });
-
-      await client.query({
-        query: ALL_AUTHORS,
-        fetchPolicy: "network-only",
-      });
-    } catch (error) {
-      console.error("Prefetch failed:", error);
-    }
-  };
-
   const logout = () => {
+    console.log("logging out");
     setToken(null);
+    console.log("Clearing cache");
     localStorage.clear();
     client.resetStore();
     setPage("login");

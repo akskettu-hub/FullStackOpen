@@ -25,6 +25,7 @@ const resolvers = {
       return Book.find(searchFilter).populate("author");
     },
     allAuthors: async () => {
+      console.log("Author.find");
       return Author.find({});
     },
     me: (root, args, context) => {
@@ -33,6 +34,7 @@ const resolvers = {
   },
   Author: {
     bookCount: async (author) => {
+      console.log("Book.find");
       return await Book.countDocuments({ author: author._id });
     },
   },
