@@ -15,7 +15,7 @@ const parseArguments = (args: string[]): bmiValues => {
   } else throw new Error("Provided values are not numbers!");
 };
 
-const calculateBmi = (height: number, weight: number): String => {
+const calculateBmi = (height: number, weight: number): string => {
   const bmi = weight / (height / 100) ** 2;
 
   switch (true) {
@@ -27,9 +27,9 @@ const calculateBmi = (height: number, weight: number): String => {
       return "Overweight";
     case bmi >= 30:
       return "Obese";
-    default:
-      new Error("Calculation failed");
   }
+
+  return "caluation failed";
 };
 
 try {

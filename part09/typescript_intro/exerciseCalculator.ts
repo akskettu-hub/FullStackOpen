@@ -41,8 +41,8 @@ const calculateExercises = (
   const totalExercise = dailyExerciseHours.reduce((sum, day) => sum + day, 0);
   const average = totalExercise / dailyExerciseHours.length;
 
-  let rating: number;
-  let ratingDescription: string;
+  let rating: number = 0;
+  let ratingDescription: string = "";
 
   switch (true) {
     case average < target: {
