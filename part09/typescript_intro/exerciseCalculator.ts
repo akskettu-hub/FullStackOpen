@@ -73,16 +73,18 @@ const calculateExercises = (
   };
 };
 
+if (require.main === module) {
+  try {
+    const { target, exercisePerDay } = parseExcerciseArguments(process.argv);
+    console.log(calculateExercises(target, exercisePerDay));
+  } catch (error: unknown) {
+    let errorMessage = "Something went wrong. ";
+    if (error instanceof Error) {
+      errorMessage += "Error: " + error.message;
+    }
 
-
-try {
-  const { target, exercisePerDay } = parseExcerciseArguments(process.argv);
-  console.log(calculateExercises(target, exercisePerDay));
-} catch (error: unknown) {
-  let errorMessage = "Something went wrong. ";
-  if (error instanceof Error) {
-    errorMessage += "Error: " + error.message;
+    console.log(errorMessage);
   }
-
-  console.log(errorMessage);
 }
+
+export default calculateExercises;
