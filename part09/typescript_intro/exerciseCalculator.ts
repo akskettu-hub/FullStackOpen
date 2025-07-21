@@ -73,7 +73,7 @@ const calculateExercises = (
   };
 };
 
-const traningSample = [3, 0, 2, 4.5, 0, 3, 1];
+
 
 try {
   const { target, exercisePerDay } = parseExcerciseArguments(process.argv);

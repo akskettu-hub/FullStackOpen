@@ -42,7 +42,7 @@ const calculateBmi = (height: number, weight: number): string => {
   return "caluation failed";
 };
 
-const parseQueryArgs = (queryArgs: any): bmiValues => {
+const parseQueryArgs = (queryArgs: object): bmiValues => {
   if (
     typeof queryArgs === "object" &&
     "height" in queryArgs &&
@@ -59,7 +59,7 @@ const parseQueryArgs = (queryArgs: any): bmiValues => {
 };
 
 const bmiCalculator = (
-  queryArgs: any
+  queryArgs: object
 ): bmiQueryResponseValues | bmiQueryResponseError => {
   try {
     const { height, weight } = parseQueryArgs(queryArgs);
