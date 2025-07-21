@@ -1,3 +1,29 @@
+interface exerciseValues {
+  target: number;
+  exercisePerDay: number[];
+}
+
+const parseExcerciseArguments = (args: string[]): exerciseValues => {
+  if (args.length < 4) throw new Error("Not enough arguments");
+
+  if (isNaN(Number(args[2]))) throw new Error("target is not a number");
+
+  const exerciseDayArgs = args.slice(3, args.length);
+
+  const exercisePerDay: number[] = [];
+  for (const day of exerciseDayArgs) {
+    if (isNaN(Number(day))) {
+      throw new Error(`Entry ${day} is not a number`);
+    }
+    exercisePerDay.push(Number(day));
+  }
+
+  return {
+    target: Number(args[2]),
+    exercisePerDay: exercisePerDay,
+  };
+};
+
 interface exerciseResults {
   periodLength: number;
   trainingDays: number;
@@ -8,9 +34,10 @@ interface exerciseResults {
   average: number;
 }
 
-const calculateExercises = (dailyExerciseHours: number[]): exerciseResults => {
-  const target = 0.75;
-
+const calculateExercises = (
+  target: number,
+  dailyExerciseHours: number[]
+): exerciseResults => {
   const totalExercise = dailyExerciseHours.reduce((sum, day) => sum + day, 0);
   const average = totalExercise / dailyExerciseHours.length;
 
@@ -49,7 +76,8 @@ const calculateExercises = (dailyExerciseHours: number[]): exerciseResults => {
 const traningSample = [3, 0, 2, 4.5, 0, 3, 1];
 
 try {
-  console.log(calculateExercises(traningSample));
+  const { target, exercisePerDay } = parseExcerciseArguments(process.argv);
+  console.log(calculateExercises(target, exercisePerDay));
 } catch (error: unknown) {
   let errorMessage = "Something went wrong. ";
   if (error instanceof Error) {
