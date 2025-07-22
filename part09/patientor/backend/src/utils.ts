@@ -1,5 +1,6 @@
 import { Gender, NewPatient } from "./types";
-
+import * as z from "zod";
+/*
 const isString = (text: unknown): text is string => {
   return typeof text === "string" || text instanceof String;
 };
@@ -51,16 +52,27 @@ const toNewPatient = (object: unknown): NewPatient => {
     "occupation" in object
   ) {
     const newPatient: NewPatient = {
-      name: parseGenericPatientField(object.name),
-      dateOfBirth: parseDate(object.dateOfBirth),
-      ssn: parseGenericPatientField(object.ssn),
-      gender: parseGender(object.gender),
-      occupation: parseGenericPatientField(object.occupation),
+      name: z.string().parse(object.name),
+      dateOfBirth: z.string().date().parse(object.dateOfBirth),
+      ssn: z.string().parse(object.ssn),
+      gender: z.nativeEnum(Gender).parse(object.gender),
+      occupation: z.string().parse(object.occupation),
     };
 
     return newPatient;
   }
   throw new Error("Incorrect data: some fields are missing");
 };
+*/
 
-export default toNewPatient;
+export const newPatientSchema = z.object({
+  name: z.string(),
+  dateOfBirth: z.string().date(),
+  ssn: z.string(),
+  gender: z.nativeEnum(Gender),
+  occupation: z.string(),
+});
+
+export const toNewPatient = (object: unknown): NewPatient => {
+  return newPatientSchema.parse(object);
+};

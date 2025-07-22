@@ -3,8 +3,8 @@ Content-Type: application/json
 
 {
     "name": "Andrew Mandrew",
-    "dateOfBirth": "1999-12-12",
+    "dateOfBirth": "1999-12-01",
     "ssn": "111111-111111",
-    "gender": "beans",
+    "gender": "other",
     "occupation": "Stepladder"
 }
