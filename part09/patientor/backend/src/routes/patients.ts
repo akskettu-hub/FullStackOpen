@@ -2,7 +2,7 @@ import express from "express";
 import patientService from "../services/patientService";
 import { toNewPatient } from "../utils";
 import * as z from "zod";
-import patientData from "../../data/patients";
+import patientData from "../../data/patients-full";
 
 const router = express.Router();
 

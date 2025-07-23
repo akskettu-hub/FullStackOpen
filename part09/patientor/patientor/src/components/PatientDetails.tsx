@@ -38,6 +38,8 @@ const PatientDetails = () => {
 
   const genderIcon = pickGenderIcon();
 
+  console.log(patient.entries);
+
   return (
     <div>
       <h2>
@@ -45,6 +47,20 @@ const PatientDetails = () => {
       </h2>
       <p>SSN: {patient?.ssn}</p>
       <p>Occupation: {patient?.occupation}</p>
+
+      <h3>entries</h3>
+      {patient.entries.map((entry) => (
+        <div key={entry.id}>
+          <div>
+            <strong>{entry.date}</strong> <em>{entry.description}</em>
+          </div>
+          <ul>
+            {entry.diagnosisCodes?.map((codes) => (
+              <li>{codes}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 };
