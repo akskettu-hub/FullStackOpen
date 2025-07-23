@@ -1,13 +1,18 @@
 import { useParams } from "react-router-dom";
-import { Patient } from "../types";
+import { Diagnosis, Patient } from "../types";
 
 import patientService from "../services/patients";
+
 import { useEffect, useState } from "react";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 
-const PatientDetails = () => {
+interface Props {
+  diagnoses: Diagnosis[];
+}
+
+const PatientDetails = (props: Props) => {
   const id = useParams().id;
   const [patient, setPatient] = useState<Patient>();
 
@@ -38,8 +43,6 @@ const PatientDetails = () => {
 
   const genderIcon = pickGenderIcon();
 
-  console.log(patient.entries);
-
   return (
     <div>
       <h2>
@@ -55,8 +58,11 @@ const PatientDetails = () => {
             <strong>{entry.date}</strong> <em>{entry.description}</em>
           </div>
           <ul>
-            {entry.diagnosisCodes?.map((codes) => (
-              <li>{codes}</li>
+            {entry.diagnosisCodes?.map((code) => (
+              <li key={code}>
+                {code}{" "}
+                {props.diagnoses.find((diag) => diag.code === code)?.name}
+              </li>
             ))}
           </ul>
         </div>

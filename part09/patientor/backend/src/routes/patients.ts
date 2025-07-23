@@ -9,8 +9,6 @@ const router = express.Router();
 router.get("/", (_req, res) => {
   console.log("patients get");
 
-  console.log(patientService.getNonSesitivePatientData());
-
   res.send(patientService.getNonSesitivePatientData());
 });
 
