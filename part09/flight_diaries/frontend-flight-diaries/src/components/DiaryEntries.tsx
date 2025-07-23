@@ -5,6 +5,8 @@ interface DiaryEntriesProps {
 }
 
 export const DiaryEtries = (props: DiaryEntriesProps) => {
+  console.log("Rendering entries: ", props.diaryEntries);
+
   return (
     <div>
       <h2>Fight Diary Entries</h2>
