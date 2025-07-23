@@ -36,8 +36,8 @@ const getNonSesitivePatientDataById = (
 const addPatient = (patient: NewPatient): Patient => {
   const newPatient = {
     id: uuid(),
-    entries: [],
     ...patient,
+    entries: [],
   };
 
   return newPatient;

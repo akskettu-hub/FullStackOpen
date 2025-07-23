@@ -2,6 +2,7 @@ import express from "express";
 import patientService from "../services/patientService";
 import { toNewPatient } from "../utils";
 import * as z from "zod";
+import patientData from "../../data/patients";
 
 const router = express.Router();
 
@@ -14,8 +15,8 @@ router.get("/", (_req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  console.log("patient get by id");
   const id = req.params.id;
+  console.log("patient get by id: ", id);
   const patient = patientService.getPatientDataById(id);
 
   if (patient) {
@@ -32,7 +33,10 @@ router.post("/", (req, res) => {
     const newPatient = toNewPatient(req.body);
 
     const addedPatient = patientService.addPatient(newPatient);
+    patientData.push(addedPatient);
     res.json(addedPatient);
+
+    console.log(addedPatient);
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       res.status(400).send({ error: error.issues });
