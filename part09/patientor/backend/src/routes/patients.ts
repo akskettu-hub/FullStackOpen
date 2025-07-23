@@ -6,11 +6,23 @@ import * as z from "zod";
 const router = express.Router();
 
 router.get("/", (_req, res) => {
-  console.log("patient get");
+  console.log("patients get");
 
   console.log(patientService.getNonSesitivePatientData());
 
   res.send(patientService.getNonSesitivePatientData());
+});
+
+router.get("/:id", (req, res) => {
+  console.log("patient get by id");
+  const id = req.params.id;
+  const patient = patientService.getNonSesitivePatientDataById(id);
+
+  if (patient) {
+    res.json(patient);
+  } else {
+    res.status(404).send({ error: `Patient not found with id: ${id}` });
+  }
 });
 
 router.post("/", (req, res) => {

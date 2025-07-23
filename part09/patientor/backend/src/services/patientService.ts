@@ -13,9 +13,24 @@ const getNonSesitivePatientData = (): NonSensitivePatientData[] => {
   }));
 };
 
+const getNonSesitivePatientDataById = (
+  id: string
+): NonSensitivePatientData | undefined => {
+  const patient = patientData.find((patient) => patient.id === id);
+
+  if (patient) {
+    return {
+      id: patient?.id,
+      name: patient?.name,
+      dateOfBirth: patient?.dateOfBirth,
+      gender: patient?.gender,
+      occupation: patient?.occupation,
+    };
+  } else return;
+};
+
 const addPatient = (patient: NewPatient): Patient => {
   const newPatient = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     id: uuid(),
     ...patient,
   };
@@ -23,4 +38,8 @@ const addPatient = (patient: NewPatient): Patient => {
   return newPatient;
 };
 
-export default { getNonSesitivePatientData, addPatient };
+export default {
+  getNonSesitivePatientData,
+  getNonSesitivePatientDataById,
+  addPatient,
+};
