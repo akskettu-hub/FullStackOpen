@@ -11,7 +11,7 @@ export const DiaryEtries = (props: DiaryEntriesProps) => {
     <div>
       <h2>Fight Diary Entries</h2>
       {props.diaryEntries.map((e) => (
-        <div key={e.date}>
+        <div key={e.id}>
           <h3>{e.date}</h3>
           <p>Visibility: {e.visibility}</p>
           <p>Weather: {e.weather}</p>

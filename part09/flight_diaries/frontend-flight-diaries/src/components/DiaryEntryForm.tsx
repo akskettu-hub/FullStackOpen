@@ -1,6 +1,12 @@
 import type React from "react";
 import { createEntry } from "../diaryService";
-import type { DiaryEntry } from "../types";
+import {
+  visibilityOptions,
+  weatherOptions,
+  type DiaryEntry,
+  type Visibility,
+  type Weather,
+} from "../types";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import axios from "axios";
 
@@ -17,8 +23,8 @@ interface ValidationError {
 
 export const DiaryEntryForm = (props: DiaryEntryFormProps) => {
   const [date, setDate] = useState<string>("");
-  const [weather, setWeather] = useState<string>("");
-  const [visibility, setVisibility] = useState<string>("");
+  const [weather, setWeather] = useState<Weather>("sunny");
+  const [visibility, setVisibility] = useState<Visibility>("great");
   const [comment, setComment] = useState<string>("");
 
   const diaryEntryCreation = async (event: React.SyntheticEvent) => {
@@ -54,23 +60,40 @@ export const DiaryEntryForm = (props: DiaryEntryFormProps) => {
         <div>
           date
           <input
+            type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
           />
         </div>
         <div>
           weather
-          <input
-            value={weather}
-            onChange={(event) => setWeather(event.target.value)}
-          />
+          {weatherOptions.map((weatherOp) => (
+            <label key={weatherOp}>
+              <input
+                type="radio"
+                name="weather"
+                value={weatherOp}
+                checked={weather === weatherOp}
+                onChange={() => setWeather(weatherOp)}
+              />
+              {weatherOp}
+            </label>
+          ))}
         </div>
         <div>
           visibility
-          <input
-            value={visibility}
-            onChange={(event) => setVisibility(event.target.value)}
-          />
+          {visibilityOptions.map((visibilityOp) => (
+            <label key={visibilityOp}>
+              <input
+                type="radio"
+                name="visibility"
+                value={visibilityOp}
+                checked={visibility === visibilityOp}
+                onChange={() => setVisibility(visibilityOp)}
+              />
+              {visibilityOp}
+            </label>
+          ))}
         </div>
         <div>
           comment
