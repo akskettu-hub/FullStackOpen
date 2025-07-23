@@ -16,7 +16,7 @@ router.get("/", (_req, res) => {
 router.get("/:id", (req, res) => {
   console.log("patient get by id");
   const id = req.params.id;
-  const patient = patientService.getNonSesitivePatientDataById(id);
+  const patient = patientService.getPatientDataById(id);
 
   if (patient) {
     res.json(patient);
