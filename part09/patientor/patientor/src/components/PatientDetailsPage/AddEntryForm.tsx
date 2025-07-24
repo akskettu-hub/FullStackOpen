@@ -46,13 +46,14 @@ const AddEntryForm = (props: Props) => {
       });
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
-        if (e?.response?.data && typeof e?.response?.data === "string") {
-          const message = e.response.data.replace(
+        if (e?.response?.data && typeof e?.response?.data.error === "string") {
+          /*const message = e.response.data.replace(
             "Something went wrong. Error: ",
             ""
-          );
-          console.error(message);
-          setError(message);
+          );*/
+          const serverError = e.response.data.error;
+          console.error(serverError);
+          setError(serverError);
         } else {
           console.error("Unknown error", e);
           setError("Unknown error");
