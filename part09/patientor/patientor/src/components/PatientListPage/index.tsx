@@ -43,6 +43,7 @@ const PatientListPage = ({ patients, setPatients }: Props) => {
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         if (e?.response?.data && typeof e?.response?.data === "string") {
+          // TODO error handling
           const message = e.response.data.replace(
             "Something went wrong. Error: ",
             ""

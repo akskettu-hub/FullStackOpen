@@ -46,14 +46,27 @@ const AddEntryForm = (props: Props) => {
       });
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
-        if (e?.response?.data && typeof e?.response?.data.error === "string") {
-          /*const message = e.response.data.replace(
-            "Something went wrong. Error: ",
-            ""
-          );*/
-          const serverError = e.response.data.error;
-          console.error(serverError);
-          setError(serverError);
+        if (e?.response?.data && Array.isArray(e?.response?.data.error)) {
+          const serverErrors = e.response.data.error;
+
+          let errorMessages: string[] = [];
+          serverErrors.forEach((element: unknown) => {
+            if (
+              typeof element === "object" &&
+              element !== null &&
+              "message" in element &&
+              element.message &&
+              typeof element.message === "string"
+            ) {
+              errorMessages = errorMessages.concat(element.message);
+            }
+          });
+
+          const errorMessage =
+            "Something went wrong. Error:" + " " + errorMessages.join(", ");
+
+          console.error(errorMessage);
+          setError(errorMessage);
         } else {
           console.error("Unknown error", e);
           setError("Unknown error");

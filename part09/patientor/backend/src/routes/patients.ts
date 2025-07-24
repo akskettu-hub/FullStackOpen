@@ -52,9 +52,7 @@ router.post("/:id/entries", (req, res) => {
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       console.log(error.issues);
-      res
-        .status(400)
-        .send({ error: error.issues.map((issue) => issue.message).join(", ") });
+      res.status(400).send({ error: error.issues });
     } else {
       console.log(error);
       res.status(400).send({ error: "unkown error" });
