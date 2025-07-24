@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.get("/", (_req, res) => {
   console.log("patients get");
-
   res.send(patientService.getNonSesitivePatientData());
 });
 
@@ -53,8 +52,10 @@ router.post("/:id/entries", (req, res) => {
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       console.log(error.issues);
+      res.status(400).send({ error: error.issues });
     } else {
       console.log(error);
+      res.status(400).send({ error: "unkown error" });
     }
   }
 });

@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Diagnosis, Entry, Patient } from "../types";
+import { Diagnosis, Entry, Gender, Patient } from "../types";
 
 import patientService from "../services/patients";
 
@@ -38,14 +38,16 @@ const PatientDetails = (props: Props) => {
     return <div>loading...</div>;
   }
 
-  const pickGenderIcon = () => {
-    switch (patient.gender) {
-      case "male":
+  const pickGenderIcon = (patientGender: Gender) => {
+    switch (patientGender) {
+      case Gender.Male:
         return <MaleIcon></MaleIcon>;
-      case "female":
+      case Gender.Female:
         return <FemaleIcon></FemaleIcon>;
-      case "other":
+      case Gender.Other:
         return <TransgenderIcon></TransgenderIcon>;
+      default:
+        return assertNever(patientGender);
     }
   };
 
@@ -61,8 +63,6 @@ const PatientDetails = (props: Props) => {
         return assertNever(entry);
     }
   };
-
-  const genderIcon = pickGenderIcon();
 
   const theme = createTheme({
     palette: {
@@ -96,7 +96,7 @@ const PatientDetails = (props: Props) => {
       >
         <Box sx={{ color: "text.primary", fontSize: 15, fontWeight: "medium" }}>
           <h2>
-            {patient?.name} {genderIcon}
+            {patient?.name} {pickGenderIcon(patient.gender)}
           </h2>
           <p>SSN: {patient?.ssn}</p>
           <p>Occupation: {patient?.occupation}</p>
