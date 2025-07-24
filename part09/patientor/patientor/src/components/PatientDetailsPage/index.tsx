@@ -7,11 +7,13 @@ import { useEffect, useState } from "react";
 
 import EntryDetails from "./EntryDetails";
 
-import { Box, ThemeProvider, createTheme } from "@mui/system";
+import { Box } from "@mui/system";
 import PatientDetails from "./PatientDetails";
+import AddEntryForm from "./AddEntryForm";
 
 interface Props {
   diagnoses: Diagnosis[];
+  patients: Patient[];
 }
 
 const PatientDetailsPage = (props: Props) => {
@@ -20,6 +22,7 @@ const PatientDetailsPage = (props: Props) => {
 
   useEffect(() => {
     const fetchPatient = async () => {
+      // TODO: error handling
       if (typeof id === "string") {
         const patient = await patientService.getPatient(id);
         setPatient(patient);
@@ -28,34 +31,14 @@ const PatientDetailsPage = (props: Props) => {
     fetchPatient();
   }, [id]);
 
-  if (!patient) {
+  if (!patient || !id) {
     return <div>loading...</div>;
   }
 
-  const theme = createTheme({
-    palette: {
-      background: {
-        paper: "#fff",
-        grayish: "#d5d5db",
-      },
-      text: {
-        primary: "#173A5E",
-        secondary: "#161617",
-      },
-      action: {
-        active: "#001E3C",
-      },
-      success: {
-        dark: "#009688",
-      },
-    },
-  });
-
   return (
-    <ThemeProvider theme={theme}>
+    <div>
       <Box
         sx={{
-          bgcolor: "background.paper",
           boxShadow: 1,
           borderRadius: 2,
           p: 2,
@@ -63,9 +46,14 @@ const PatientDetailsPage = (props: Props) => {
         }}
       >
         <PatientDetails patient={patient} />
+        <AddEntryForm
+          patientId={id}
+          patient={patient}
+          setPatient={setPatient}
+        />
         <EntryDetails entries={patient.entries} diagnoses={props.diagnoses} />
       </Box>
-    </ThemeProvider>
+    </div>
   );
 };
 

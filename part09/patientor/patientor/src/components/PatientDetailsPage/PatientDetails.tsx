@@ -26,14 +26,12 @@ const PatientDetails = (props: Props) => {
   };
 
   return (
-    <Box sx={{ color: "text.primary", fontSize: 15, fontWeight: "medium" }}>
+    <Box sx={{ fontSize: 15, fontWeight: "medium" }}>
       <h2>
         {props.patient?.name} {pickGenderIcon(props.patient.gender)}
       </h2>
       <p>SSN: {props.patient?.ssn}</p>
       <p>Occupation: {props.patient?.occupation}</p>
-
-      <h3>Entries:</h3>
     </Box>
   );
 };

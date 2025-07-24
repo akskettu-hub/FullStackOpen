@@ -29,12 +29,13 @@ const EntryDetails = (props: Props) => {
 
   return (
     <div>
+      <div>
+        <h3>Entries:</h3>
+      </div>
       {props.entries.map((entry) => (
         <Box
           key={entry.id}
           sx={{
-            bgcolor: "background.grayish",
-            color: "text.secondary",
             fontSize: 15,
             fontWeight: "medium",
             border: 3,

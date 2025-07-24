@@ -69,3 +69,7 @@ export interface Patient {
 }
 
 export type PatientFormValues = Omit<Patient, "id" | "entries">;
+
+export type EntryFormValues = Omit<Entry, "id">;
+
+export type EntryFormValuesHealthCheck = Omit<HealthCheckEntry, "id">;
