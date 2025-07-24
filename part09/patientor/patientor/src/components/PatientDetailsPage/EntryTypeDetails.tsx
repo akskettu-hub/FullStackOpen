@@ -4,9 +4,9 @@ import {
   HealthCheckRating,
   HospitalEntry,
   OccupationalHealthcareEntry,
-} from "../types";
+} from "../../types";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { assertNever } from "../utils";
+import { assertNever } from "../../utils";
 
 const HospitalDetails = (entry: HospitalEntry) => {
   return <div>Doctor: {entry.specialist}</div>;
@@ -48,7 +48,7 @@ interface props {
   entry: Entry;
 }
 
-const EntryDetails = (props: props) => {
+const EntryTypeDetails = (props: props) => {
   switch (props.entry.type) {
     case "Hospital":
       return <HospitalDetails {...props.entry} />;
@@ -61,4 +61,4 @@ const EntryDetails = (props: props) => {
   }
 };
 
-export default EntryDetails;
+export default EntryTypeDetails;

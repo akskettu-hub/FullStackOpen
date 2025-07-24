@@ -24,7 +24,7 @@ Content-Type: application/json
     "date": "1999-12-01",
     "description": "Somehting something alsdkfjal;sdkjf;alskdfj",
     "specialist": "Dr. Uzi",
-    "diagnosisCodes": ["123", "123", "123", "123"],
+    "diagnosisCodes": ["123", "123", "123", 0],
     "type": "Hospital",
     "discharge": {
         "date" : "1999-12-01",
