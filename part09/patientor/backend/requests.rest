@@ -14,4 +14,49 @@ get http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667
 
 ###
 get http://localhost:3001/api/patients/
+###
+get http://localhost:3001/api/diagnoses/
+###
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
 
+{
+    "date": "1999-12-01",
+    "description": "Somehting something alsdkfjal;sdkjf;alskdfj",
+    "specialist": "Dr. Uzi",
+    "diagnosisCodes": ["123", "123", "123", "123"],
+    "type": "Hospital",
+    "discharge": {
+        "date" : "1999-12-01",
+        "criteria": "Cant be arsed to deal with this wanker"
+    }
+}
+###
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+    "date": "1999-12-01",
+    "description": "Somehting something alsdkfjal;sdkjf;alskdfj",
+    "specialist": "Dr. Kalashnikov",
+    "diagnosisCodes": ["123", "123", "123", "123"],
+    "type": "OccupationalHealthcare",
+    "employerName": "NYDP",
+    "sickLeave": {
+        "startDate" : "1999-12-01",
+        "endDate" : "1999-12-01"
+    }
+}
+
+###
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+    "date": "1999-12-01",
+    "description": "Somehting something alsdkfjal;sdkjf;alskdfj",
+    "specialist": "Dr. Balashikov",
+    "diagnosisCodes": ["123", "123", "123", "123"],
+    "type": "HealthCheck",
+    "healthCheckRating": 3
+}

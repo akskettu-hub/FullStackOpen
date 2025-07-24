@@ -1,8 +1,7 @@
 import express from "express";
 import patientService from "../services/patientService";
-import { toNewPatient } from "../utils";
+import { toNewEntry, toNewPatient } from "../utils";
 import * as z from "zod";
-import patientData from "../../data/patients-full";
 
 const router = express.Router();
 
@@ -29,17 +28,33 @@ router.post("/", (req, res) => {
 
   try {
     const newPatient = toNewPatient(req.body);
-
     const addedPatient = patientService.addPatient(newPatient);
-    patientData.push(addedPatient);
     res.json(addedPatient);
-
     console.log(addedPatient);
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       res.status(400).send({ error: error.issues });
     } else {
       res.status(400).send({ error: "unkown error" });
+    }
+  }
+});
+
+router.post("/:id/entries", (req, res) => {
+  const id = req.params.id;
+  console.log("add entries hit for: ", id);
+
+  try {
+    const newEntry = toNewEntry(req.body);
+    console.log("zod successful");
+    const addedEntry = patientService.addEntry(id, newEntry);
+    console.log("adding entry successsful: ", addedEntry);
+    res.json(addedEntry);
+  } catch (error: unknown) {
+    if (error instanceof z.ZodError) {
+      console.log(error.issues);
+    } else {
+      console.log(error);
     }
   }
 });
