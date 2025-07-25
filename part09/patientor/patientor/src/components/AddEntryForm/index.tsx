@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Grid, Alert } from "@mui/material";
+import { Box, Button, Grid, Alert } from "@mui/material";
 import { SyntheticEvent, useState } from "react";
 import patientService from "../../services/patients";
 import {
@@ -11,12 +11,12 @@ import {
 import axios from "axios";
 import EntryFormTypes from "./EntryFormTypes";
 import { assertNever } from "../../utils";
-import HealthRatingFields from "./HealthRatingFields";
 import OccupationalHealthFields from "./OccupationalHealthFields";
 import HospitalFields from "./HospitalFields";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { format } from "date-fns";
+import CommonEntryFields from "./CommonEntryFields";
+import HealthCheckFields from "./HealthCheckFields";
 
 interface Props {
   patientId: string;
@@ -97,6 +97,7 @@ const AddEntryForm = (props: Props) => {
         ...props.patient,
         entries: [...props.patient.entries, addedEntry],
       });
+      setError("");
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         if (e?.response?.data && Array.isArray(e?.response?.data.error)) {
@@ -129,17 +130,6 @@ const AddEntryForm = (props: Props) => {
 
   const toggleFormIsHidden = () => {
     setFormIsHidden(!formIsHidden);
-  };
-
-  const handleDateChange = (date: Date | null) => {
-    if (date) {
-      const formattedDate = format(date, "yyyy-MM-dd");
-      setDate(formattedDate);
-
-      console.log(date);
-    } else {
-      setDate("");
-    }
   };
 
   if (formIsHidden) {
@@ -177,48 +167,21 @@ const AddEntryForm = (props: Props) => {
         <h3>New {type} entry</h3>
         <form onSubmit={onSubmit}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
-              label="Date"
-              value={date ? new Date(date) : null}
-              onChange={(value) => handleDateChange(value)}
-              slotProps={{ textField: { size: "small" } }}
-            />
-
-            <TextField
-              label="Description"
-              fullWidth
-              size="small"
-              variant="standard"
-              onChange={({ target }) => setDescription(target.value)}
-            />
-            <TextField
-              label="Specialist"
-              fullWidth
-              size="small"
-              variant="standard"
-              onChange={({ target }) => setSpecialist(target.value)}
-            />
-            <TextField
-              label="Diagnosis Codes"
-              fullWidth
-              size="small"
-              variant="standard"
-              onChange={({ target }) =>
-                setDiagnosisCodes(
-                  target.value
-                    .split(",")
-                    .map((code) => code.trim())
-                    .filter((code) => code !== "")
-                )
-              }
+            <CommonEntryFields
+              date={date}
+              setDate={setDate}
+              setDescription={setDescription}
+              setSpecialist={setSpecialist}
+              setDiagnosisCodes={setDiagnosisCodes}
             />
 
             <EntryFormTypes type={type} setType={setType} />
-
             {type === "HealthCheck" && (
-              <HealthRatingFields setHealthCheckRating={setHealthCheckRating} />
+              <HealthCheckFields
+                healthCheckRating={healthCheckRating}
+                setHealthCheckRating={setHealthCheckRating}
+              />
             )}
-
             {type === "OccupationalHealthcare" && (
               <OccupationalHealthFields
                 sickLeave={sickLeave}
@@ -226,7 +189,6 @@ const AddEntryForm = (props: Props) => {
                 setSickLeave={setSickLeave}
               />
             )}
-
             {type === "Hospital" && (
               <HospitalFields setDischarge={setDischarge} />
             )}

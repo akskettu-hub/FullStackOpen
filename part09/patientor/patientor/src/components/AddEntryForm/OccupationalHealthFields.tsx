@@ -1,4 +1,4 @@
-import { Box, TextField } from "@mui/material";
+import { Box, TextField, Typography } from "@mui/material";
 import { SickLeave } from "../../types";
 import { format } from "date-fns";
 import {
@@ -23,6 +23,9 @@ const OccupationalHealthFields = (props: Props) => {
   };
   return (
     <div>
+      <Typography variant="subtitle1" sx={{ mt: 2 }}>
+        Sick Leave Period
+      </Typography>
       <Box mt={2}>
         <DateRangePicker
           value={[

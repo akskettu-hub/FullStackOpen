@@ -9,7 +9,7 @@ import EntryDetails from "./EntryDetails";
 
 import { Box } from "@mui/system";
 import PatientDetails from "./PatientDetails";
-import AddEntryForm from "./AddEntryForm";
+import AddEntryForm from "../AddEntryForm";
 
 interface Props {
   diagnoses: Diagnosis[];
