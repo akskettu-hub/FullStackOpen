@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-  Entry,
-  EntryFormValuesHealthCheck,
-  Patient,
-  PatientFormValues,
-} from "../types";
+import { Entry, EntryFormValues, Patient, PatientFormValues } from "../types";
 
 import { apiBaseUrl } from "../constants";
 
@@ -26,7 +21,7 @@ const create = async (object: PatientFormValues) => {
   return data;
 };
 
-const addEntry = async (object: EntryFormValuesHealthCheck, id: string) => {
+const addEntry = async (object: EntryFormValues, id: string) => {
   const { data } = await axios.post<Entry>(
     `${apiBaseUrl}/patients/${id}/entries`,
     object

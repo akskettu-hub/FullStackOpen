@@ -1,8 +1,22 @@
 import { Box, Button, TextField, Grid, Alert } from "@mui/material";
 import { SyntheticEvent, useState } from "react";
 import patientService from "../../services/patients";
-import { HealthCheckRating, Patient } from "../../types";
+import {
+  Discharge,
+  EntryType,
+  HealthCheckRating,
+  Patient,
+  SickLeave,
+} from "../../types";
 import axios from "axios";
+import EntryFormTypes from "./EntryFormTypes";
+import { assertNever } from "../../utils";
+import HealthRatingFields from "./HealthRatingFields";
+import OccupationalHealthFields from "./OccupationalHealthFields";
+import HospitalFields from "./HospitalFields";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { format } from "date-fns";
 
 interface Props {
   patientId: string;
@@ -18,22 +32,61 @@ const AddEntryForm = (props: Props) => {
   const [date, setDate] = useState<string>("");
   const [specialist, setSpecialist] = useState<string>("");
   const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+
+  const [type, setType] = useState(EntryType.HealthCheck);
   const [healthCheckRating, setHealthCheckRating] = useState(
     HealthCheckRating.Healthy
   );
 
+  const [discharge, setDischarge] = useState<Discharge>({
+    date: "",
+    criteria: "",
+  });
+
+  const [employerName, setEmpoyerName] = useState<string>("");
+
+  const [sickLeave, setSickLeave] = useState<SickLeave>({
+    startDate: "",
+    endDate: "",
+  });
+
   const onSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
+    console.log(date);
 
     try {
+      const baseEntry = {
+        date: date,
+        specialist: specialist,
+        description: description,
+        diagnosisCodes: diagnosisCodes,
+        type: type,
+      };
+
+      const getEntryTypeFields = () => {
+        switch (type) {
+          case EntryType.HealthCheck:
+            return { healthCheckRating: healthCheckRating };
+          case EntryType.Hospital:
+            return { discharge: discharge };
+          case EntryType.OccupationalHealthcare:
+            return {
+              employerName: employerName,
+              ...(sickLeave.startDate && sickLeave.endDate
+                ? { sickLeave }
+                : {}),
+            };
+          default:
+            return assertNever(type);
+        }
+      };
+
+      const entryTypeFields = getEntryTypeFields();
+
       const addedEntry = await patientService.addEntry(
         {
-          date: date,
-          description: description,
-          specialist: specialist,
-          diagnosisCodes: diagnosisCodes,
-          healthCheckRating: healthCheckRating,
-          type: "HealthCheck",
+          ...baseEntry,
+          ...entryTypeFields,
         },
         props.patientId
       );
@@ -55,7 +108,6 @@ const AddEntryForm = (props: Props) => {
               typeof element === "object" &&
               element !== null &&
               "message" in element &&
-              element.message &&
               typeof element.message === "string"
             ) {
               errorMessages = errorMessages.concat(element.message);
@@ -77,6 +129,17 @@ const AddEntryForm = (props: Props) => {
 
   const toggleFormIsHidden = () => {
     setFormIsHidden(!formIsHidden);
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      const formattedDate = format(date, "yyyy-MM-dd");
+      setDate(formattedDate);
+
+      console.log(date);
+    } else {
+      setDate("");
+    }
   };
 
   if (formIsHidden) {
@@ -111,71 +174,81 @@ const AddEntryForm = (props: Props) => {
           padding: 2,
         }}
       >
-        <h3>New Healthcheck entry</h3>
+        <h3>New {type} entry</h3>
         <form onSubmit={onSubmit}>
-          <TextField
-            label="Date"
-            fullWidth
-            size="small"
-            variant="standard"
-            onChange={({ target }) => setDate(target.value)}
-          />
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              label="Date"
+              value={date ? new Date(date) : null}
+              onChange={(value) => handleDateChange(value)}
+              slotProps={{ textField: { size: "small" } }}
+            />
 
-          <TextField
-            label="Description"
-            fullWidth
-            size="small"
-            variant="standard"
-            onChange={({ target }) => setDescription(target.value)}
-          />
-          <TextField
-            label="Specialist"
-            fullWidth
-            size="small"
-            variant="standard"
-            onChange={({ target }) => setSpecialist(target.value)}
-          />
-          <TextField
-            label="Diagnosis Codes"
-            fullWidth
-            size="small"
-            variant="standard"
-            onChange={({ target }) =>
-              setDiagnosisCodes(
-                target.value
-                  .split(",")
-                  .map((code) => code.trim())
-                  .filter((code) => code !== "")
-              )
-            }
-          />
-          <TextField
-            label="Health Rating"
-            fullWidth
-            size="small"
-            variant="standard"
-            onChange={({ target }) =>
-              setHealthCheckRating(Number(target.value))
-            }
-          />
+            <TextField
+              label="Description"
+              fullWidth
+              size="small"
+              variant="standard"
+              onChange={({ target }) => setDescription(target.value)}
+            />
+            <TextField
+              label="Specialist"
+              fullWidth
+              size="small"
+              variant="standard"
+              onChange={({ target }) => setSpecialist(target.value)}
+            />
+            <TextField
+              label="Diagnosis Codes"
+              fullWidth
+              size="small"
+              variant="standard"
+              onChange={({ target }) =>
+                setDiagnosisCodes(
+                  target.value
+                    .split(",")
+                    .map((code) => code.trim())
+                    .filter((code) => code !== "")
+                )
+              }
+            />
 
-          <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item>
-              <Button
-                color="error"
-                variant="contained"
-                type="submit"
-                onClick={toggleFormIsHidden}
-              >
-                Cancel
-              </Button>
+            <EntryFormTypes type={type} setType={setType} />
+
+            {type === "HealthCheck" && (
+              <HealthRatingFields setHealthCheckRating={setHealthCheckRating} />
+            )}
+
+            {type === "OccupationalHealthcare" && (
+              <OccupationalHealthFields
+                sickLeave={sickLeave}
+                setEmpoyerName={setEmpoyerName}
+                setSickLeave={setSickLeave}
+              />
+            )}
+
+            {type === "Hospital" && (
+              <HospitalFields setDischarge={setDischarge} />
+            )}
+
+            <Grid container justifyContent="space-between" spacing={2} mt={2}>
+              <Grid item>
+                <Button
+                  color="error"
+                  variant="contained"
+                  type="submit"
+                  onClick={toggleFormIsHidden}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button color="primary" variant="contained" type="submit">
+                  Submit
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button color="primary" variant="contained" type="submit">
-                Submit
-              </Button>
-            </Grid>
-          </Grid>
+          </LocalizationProvider>
         </form>
       </Box>
     </div>
