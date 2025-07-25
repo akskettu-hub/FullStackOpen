@@ -1,4 +1,4 @@
-import { Gender, HealthCheckRating, NewEntry, NewPatient } from "./types";
+import { Gender, HealthCheckRating } from "./types";
 import * as z from "zod";
 
 export const newPatientSchema = z.object({
@@ -9,9 +9,10 @@ export const newPatientSchema = z.object({
   occupation: z.string(),
 });
 
+/*
 export const toNewPatient = (object: unknown): NewPatient => {
   return newPatientSchema.parse(object);
-};
+};*/
 
 const baseEntrySchema = z.object({
   description: z.string(),
@@ -52,6 +53,10 @@ export const newEntrySchema = z.discriminatedUnion("type", [
   HealthCheckEntrySchema,
 ]);
 
+export const idParamSchema = z.object({
+  id: z.uuid(),
+});
+/*
 export const toNewEntry = (object: unknown): NewEntry => {
   return newEntrySchema.parse(object);
-};
+};*/

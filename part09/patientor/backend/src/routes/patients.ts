@@ -1,7 +1,10 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import patientService from "../services/patientService";
-import { toNewEntry, toNewPatient } from "../utils";
-import * as z from "zod";
+
+import { Entry, NewEntry, NewPatient, Patient } from "../types";
+import { errorMiddleware } from "../middleware/errorMiddleware";
+import { newEntryParser } from "../middleware/newEntryParser";
+import { newPatientParser } from "../middleware/newPatientParser";
 
 const router = express.Router();
 
@@ -22,42 +25,31 @@ router.get("/:id", (req, res) => {
   }
 });
 
-router.post("/", (req, res) => {
-  console.log("post hit");
-
-  try {
-    const newPatient = toNewPatient(req.body);
-    const addedPatient = patientService.addPatient(newPatient);
+router.post(
+  "/",
+  newPatientParser,
+  (req: Request<unknown, unknown, NewPatient>, res: Response<Patient>) => {
+    const addedPatient = patientService.addPatient(req.body);
     res.json(addedPatient);
-    console.log(addedPatient);
-  } catch (error: unknown) {
-    if (error instanceof z.ZodError) {
-      res.status(400).send({ error: error.issues });
-    } else {
-      res.status(400).send({ error: "unkown error" });
-    }
+    console.log("patient added successfully", addedPatient);
   }
-});
+);
 
-router.post("/:id/entries", (req, res) => {
-  const id = req.params.id;
-  console.log("add entries hit for: ", id);
+type IdParam = { id: string };
 
-  try {
-    const newEntry = toNewEntry(req.body);
-    console.log("zod successful");
-    const addedEntry = patientService.addEntry(id, newEntry);
+router.post(
+  "/:id/entries",
+  newEntryParser,
+  (req: Request<IdParam, unknown, NewEntry>, res: Response<Entry>) => {
+    const id = req.params.id;
+    console.log("add entries hit for: ", id);
+
+    const addedEntry = patientService.addEntry(id, req.body);
     console.log("adding entry successsful: ", addedEntry);
     res.json(addedEntry);
-  } catch (error: unknown) {
-    if (error instanceof z.ZodError) {
-      console.log(error.issues);
-      res.status(400).send({ error: error.issues });
-    } else {
-      console.log(error);
-      res.status(400).send({ error: "unkown error" });
-    }
   }
-});
+);
+
+router.use(errorMiddleware);
 
 export default router;
