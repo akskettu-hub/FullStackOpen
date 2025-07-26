@@ -1,0 +1,3 @@
+[submodule "part10/fulls-stack-open-pokedex"]
+	path = part10/fulls-stack-open-pokedex
+	url = git@github.com:akskettu-hub/full-stack-open-pokedex.git
