@@ -4,3 +4,6 @@
 [submodule "part11/blog_ci"]
 	path = part11/blog_ci
 	url = git@github.com:akskettu-hub/blog_ci.git
+[submodule "part10/rate-repository-app"]
+	path = part10/rate-repository-app
+	url = git@github.com:akskettu-hub/rate-repository-app.git
