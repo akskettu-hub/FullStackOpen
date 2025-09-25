@@ -7,3 +7,6 @@
 [submodule "part10/rate-repository-app"]
 	path = part10/rate-repository-app
 	url = git@github.com:akskettu-hub/rate-repository-app.git
+[submodule "part12/part12-containers-applications"]
+	path = part12/part12-containers-applications
+	url = git@github.com:akskettu-hub/part12-containers-applications.git
