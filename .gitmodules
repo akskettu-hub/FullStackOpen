@@ -10,3 +10,6 @@
 [submodule "part12/part12-containers-applications"]
 	path = part12/part12-containers-applications
 	url = git@github.com:akskettu-hub/part12-containers-applications.git
+[submodule "part13/relational_databases"]
+	path = part13/relational_databases
+	url = https://github.com/akskettu-hub/relational_databases
